@@ -20,6 +20,11 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
     }
+    versionCatalogs {
+        create("self") {
+            from(files("self.versions.toml"))
+        }
+    }
 }
 
 rootProject.name = "Headache Tracker"

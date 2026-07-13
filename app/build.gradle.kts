@@ -6,20 +6,48 @@ plugins {
     alias(libs.plugins.metro)
 }
 
+// derived from self.versions.name in the root build script (see the formula there)
+val selfVersionCode: Int by rootProject.extra
+val selfAppName: String by rootProject.extra
+val selfAppId: String by rootProject.extra
+
 android {
     namespace = "com.episode6.headachetracker"
     compileSdk = 35
 
+    buildFeatures {
+        // for the snapshot-aware app_name resValue in defaultConfig
+        resValues = true
+    }
+
     defaultConfig {
-        applicationId = "com.episode6.headachetracker"
+        // snapshot builds (everything except CI release-tag builds) get their own
+        // applicationId and launcher label so they can be installed side-by-side with
+        // the released app instead of overwriting it (the namespace above stays fixed,
+        // so R + manifest class refs are unaffected)
+        applicationId = selfAppId
+        resValue("string", "app_name", selfAppName)
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = selfVersionCode
+        versionName = self.versions.name.get()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("release") {
+            // CI decodes the ANDROID_KEYSTORE secret to a file and exports these
+            // env vars; without them (local builds, PR CI) release stays unsigned
+            val keystorePath = System.getenv("ANDROID_KEYSTORE_PATH")
+            if (keystorePath != null) {
+                storeFile = file(keystorePath)
+                storePassword = System.getenv("ANDROID_KEYSTORE_ROOT_PASSWORD")
+                keyAlias = "episode6"
+                keyPassword = System.getenv("ANDROID_KEYSTORE_KEY_PASSWORD")
+            }
+        }
+    }
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -27,6 +55,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release").takeIf { it.storeFile != null }
         }
     }
     compileOptions {
