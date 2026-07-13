@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Headache Tracker</string>
+    <string name="entry_saved_toast">Entry saved</string>
+    <string name="export_data">Export data</string>
+    <string name="import_data">Import data</string>
+    <string name="data_transfer_in_progress">Working…</string>
+    <string name="export_success">Exported %1$d entries</string>
+    <string name="import_success">Imported %1$d entries</string>
+    <string name="export_filename">headache-tracker-backup.json</string>
+    <string name="full_year_view">Full year view</string>
+    <string name="full_year_back">Back to calendar</string>
+    <string name="log_today">Log today</string>
+    <string name="auto_export">Auto-Export</string>
+    <string name="last_auto_export">Last Auto-Export: %1$s</string>
+    <string name="never">Never</string>
+</resources>
