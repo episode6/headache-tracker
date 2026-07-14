@@ -4,6 +4,15 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
+    <!-- Scaled to keep the calendar inside the 33dp-radius circular safe zone
+         of the adaptive icon (corners land ~31dp from center at 0.8x) -->
+    <group
+        android:scaleX="0.8"
+        android:scaleY="0.8"
+        android:pivotX="54"
+        android:pivotY="56"
+        android:translateY="-2">
+
     <!-- Calendar Body -->
     <path
         android:fillColor="#FFFFFF"
@@ -28,5 +37,7 @@
     <path android:fillColor="#FF5252" android:pathData="M54,68 A3,3 0 1,1 60,68 A3,3 0 1,1 54,68" />
     <path android:fillColor="#69F0AE" android:pathData="M64,68 A3,3 0 1,1 70,68 A3,3 0 1,1 64,68" />
     <path android:fillColor="#FFD740" android:pathData="M74,68 A3,3 0 1,1 80,68 A3,3 0 1,1 74,68" />
+
+    </group>
 
 </vector>
