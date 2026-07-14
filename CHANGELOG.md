@@ -2,6 +2,9 @@
 
 ### v1.0.0 - Unreleased
 
+- Committed a shared debug keystore (`debug.keystore` in the repo root, standard
+  debug credentials) and pointed the debug signing config at it, so CI-built and
+  local debug APKs share a signature and can overwrite each other on-device.
 - Shrunk the calendar artwork in the launcher icon (to 80%) so it fits inside the
   circular safe zone of Android's adaptive icon — previously the round mask clipped
   all four corners of the calendar.
