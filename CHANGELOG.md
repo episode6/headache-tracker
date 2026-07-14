@@ -11,3 +11,5 @@
 - Snapshot builds carry their own launcher icon (dark charcoal background; releases
   keep the purple one) so the two side-by-side installs are distinguishable at a
   glance.
+- Release builds are now minified and resource-shrunk with R8 (full mode, the AGP
+  default), significantly shrinking the APK.
