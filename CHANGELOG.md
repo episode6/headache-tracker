@@ -13,3 +13,5 @@
   glance.
 - Release builds are now minified and resource-shrunk with R8 (full mode, the AGP
   default), significantly shrinking the APK.
+- On the day entry screen, tapping a severity level smooth-scrolls to the bottom of
+  the screen, revealing the pills section.
