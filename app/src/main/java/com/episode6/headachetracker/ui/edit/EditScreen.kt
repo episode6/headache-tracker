@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.episode6.headachetracker.R
 import com.episode6.headachetracker.ui.theme.*
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -49,6 +51,8 @@ fun EditScreen(
 ) {
     val date = LocalDate.parse(state.date)
     val formattedDate = date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG))
+    val scrollState = rememberScrollState()
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -100,7 +104,7 @@ fun EditScreen(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
@@ -136,7 +140,11 @@ fun EditScreen(
 
             IntensitySelector(
                 selectedIntensity = state.intensity,
-                onIntensityChanged = onIntensityChanged
+                onIntensityChanged = { intensity ->
+                    onIntensityChanged(intensity)
+                    // reveal the pills section (and Save) after picking a severity
+                    scope.launch { scrollState.animateScrollTo(scrollState.maxValue) }
+                }
             )
 
             Text(
