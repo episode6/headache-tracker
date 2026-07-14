@@ -57,6 +57,8 @@ fun EditScreen(
     val scope = rememberCoroutineScope()
 
     Scaffold(
+        // Keep the Cancel/Save bar above the keyboard while editing notes
+        modifier = Modifier.imePadding(),
         topBar = {
             TopAppBar(
                 title = { Text(text = "Log Headache", style = MaterialTheme.typography.titleLarge) }
