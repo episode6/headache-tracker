@@ -236,7 +236,16 @@ Keep diffs focused. Match naming and patterns in neighboring files.
 - **KSP** for Room and Moshi codegen
 - **Compose BOM** pins Compose library versions (`gradle/libs.versions.toml`)
 - **compileSdk / targetSdk**: 35; **minSdk**: 26
-- Version catalog: `gradle/libs.versions.toml`
+- Version catalog: `gradle/libs.versions.toml` (dependencies); `self.versions.toml` (the app's own version — single source of truth)
+
+### Versioning & releases
+
+This repo follows the episode6 app-repo shape (see `RELEASE_CHECKLIST.md`, the source of truth):
+
+- The app version lives in `self.versions.toml` (`MAJOR.MINOR.PATCH`, plain numeric). The android versionCode is **derived** in the root `build.gradle.kts` — never set versionCode/versionName by hand.
+- Every build is a **snapshot** except CI builds off a release tag: snapshots install side-by-side with the release app under `com.episode6.snapshots.headachetracker` with a ` (SNAPSHOT)` display-name suffix, and derive their versionCode from the git commit count (full history required — shallow clones fail the build).
+- Every code change needs a `CHANGELOG.md` (or other docs) update — enforced by the `verify-docs` CI workflow. Add bullets under the top `### v<next> - Unreleased` section.
+- Releases ship a signed APK to a GitHub release via `build-installers.yml`; the process is automated by the agent skills in `.agents/` (`release-branch-skill`, `ship-release-skill`, `update-docs-skill`, `verify`).
 
 ---
 

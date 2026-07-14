@@ -17,8 +17,11 @@ import org.junit.Assert.*
 class ExampleInstrumentedTest {
     @Test
     fun useAppContext() {
-        // Context of the app under test.
+        // Context of the app under test. Snapshot builds (everything except CI
+        // release-tag builds) install under com.episode6.snapshots.headachetracker,
+        // so only assert the shared prefix.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.episode6.headachetracker", appContext.packageName)
+        assertTrue(appContext.packageName.endsWith("headachetracker"))
+        assertTrue(appContext.packageName.startsWith("com.episode6"))
     }
 }

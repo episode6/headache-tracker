@@ -88,7 +88,7 @@ When skipped (no device), no need to run Gradle for install — but you may stil
 
 | Value | Source |
 |-------|--------|
-| `applicationId` | `app/build.gradle.kts` → `com.episode6.headachetracker` |
-| Launcher activity | `MainActivity` in `AndroidManifest.xml` |
+| `applicationId` | `selfAppId` in root `build.gradle.kts` → `com.episode6.snapshots.headachetracker` for local (snapshot) builds |
+| Launcher activity | `MainActivity` in `AndroidManifest.xml` (class stays in the fixed `com.episode6.headachetracker` namespace) |
 
 If either changes, update `scripts/launch-app.sh`.

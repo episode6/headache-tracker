@@ -1,5 +1,5 @@
+<!-- app_name is generated as a snapshot-aware resValue in app/build.gradle.kts -->
 <resources>
-    <string name="app_name">Headache Tracker</string>
     <string name="entry_saved_toast">Entry saved</string>
     <string name="export_data">Export data</string>
     <string name="import_data">Import data</string>
