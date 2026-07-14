@@ -17,7 +17,7 @@ val selfIsSnapshot: Boolean by extra(System.getenv("GITHUB_REF")?.startsWith("re
 // .debug applicationIdSuffix — see app/build.gradle.kts — so they coexist with
 // installed snapshot APKs too.)
 val selfAppName: String by extra(if (selfIsSnapshot) "Headache Tracker (SNAPSHOT)" else "Headache Tracker")
-val selfAppId: String by extra(if (selfIsSnapshot) "com.episode6.snapshots.headachetracker" else "com.episode6.headachetracker")
+val selfAppId: String by extra(if (selfIsSnapshot) "com.episode6.headachetracker.snapshot" else "com.episode6.headachetracker")
 
 // The version name in self.versions.toml is the single source of truth: MAJOR.MINOR.PATCH.
 // Cutting a release branch bumps the patch by 10, so regular releases land on multiples

@@ -16,8 +16,8 @@ substitute for driving the app.
 # local builds are snapshots and debug builds append a .debug suffix, so they coexist
 # with snapshot/release installs (the activity class keeps the base package — it
 # follows the fixed namespace)
-adb shell am start -n com.episode6.snapshots.headachetracker.debug/com.episode6.headachetracker.MainActivity
-adb shell pm clear com.episode6.snapshots.headachetracker.debug   # reset to empty state
+adb shell am start -n com.episode6.headachetracker.snapshot.debug/com.episode6.headachetracker.MainActivity
+adb shell pm clear com.episode6.headachetracker.snapshot.debug   # reset to empty state
 ```
 
 Check for a connected device first (`adb devices` — state must be `device`). With

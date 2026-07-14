@@ -45,7 +45,7 @@ sonatype. Agent skills in [.agents/](./.agents) automate most of it
 - **Snapshot builds carry their own app identity** so they install side-by-side with
   release builds instead of overwriting them: the display name gains a ` (SNAPSHOT)`
   suffix and the android applicationId becomes
-  `com.episode6.snapshots.headachetracker` (see `selfAppName` / `selfAppId` in the
+  `com.episode6.headachetracker.snapshot` (see `selfAppName` / `selfAppId` in the
   root `build.gradle.kts`; the `namespace` stays fixed at
   `com.episode6.headachetracker`, so R and manifest class references are unaffected).
   Snapshot builds also swap in their own app icon (dark charcoal background; releases
