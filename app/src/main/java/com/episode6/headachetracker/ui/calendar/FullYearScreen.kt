@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -242,13 +243,14 @@ private fun FullYearHeaderRow(
 
 @Composable
 private fun FullYearMonthColumn(cellSize: Dp) {
+    val locale = LocalLocale.current.platformLocale
     Column(
         modifier = Modifier.width(MonthLabelWidth),
         verticalArrangement = Arrangement.spacedBy(CellSpacing),
     ) {
         for (month in 1..MONTHS_PER_YEAR) {
             val monthName = java.time.Month.of(month)
-                .getDisplayName(TextStyle.SHORT, Locale.getDefault())
+                .getDisplayName(TextStyle.SHORT, locale)
                 .take(2)
 
             Text(
