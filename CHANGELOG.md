@@ -2,6 +2,9 @@
 
 ### v1.0.0 - Unreleased
 
+- Shrunk the calendar artwork in the launcher icon (to 80%) so it fits inside the
+  circular safe zone of Android's adaptive icon — previously the round mask clipped
+  all four corners of the calendar.
 - Import the episode6 app-repo CI/release infrastructure (from podcast-hacker):
   versioning via `self.versions.toml` with derived versionCodes, snapshot vs release
   build identities (snapshots install side-by-side as "Headache Tracker (SNAPSHOT)" /
