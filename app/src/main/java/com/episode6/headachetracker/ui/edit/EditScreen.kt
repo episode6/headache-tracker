@@ -7,6 +7,8 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectableGroup
@@ -15,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
@@ -169,14 +173,29 @@ fun EditScreen(
                 fontWeight = FontWeight.SemiBold
             )
 
+            // Nothing else on this screen is focusable in touch mode, so the
+            // notes field is handed initial focus when the pane opens, which
+            // scrolls past the severity selector and pops the keyboard.
+            // Refuse focus until the user actually touches the field.
+            var notesTouched by remember { mutableStateOf(false) }
+            val notesInteraction = remember { MutableInteractionSource() }
+            LaunchedEffect(notesInteraction) {
+                notesInteraction.interactions.collect { interaction ->
+                    if (interaction is PressInteraction.Press) notesTouched = true
+                }
+            }
+
             OutlinedTextField(
                 value = state.notes,
                 onValueChange = onNotesChanged,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusProperties { canFocus = notesTouched },
                 placeholder = { Text("Anything worth remembering? (optional)") },
                 minLines = 3,
                 maxLines = 3,
-                shape = MaterialTheme.shapes.large
+                shape = MaterialTheme.shapes.large,
+                interactionSource = notesInteraction
             )
         }
     }
