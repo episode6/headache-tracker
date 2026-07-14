@@ -2,9 +2,10 @@
 # Launch the default launcher activity on every adb device in "device" state.
 set -euo pipefail
 
-# local builds are always snapshots (see selfAppId in the root build.gradle.kts);
-# the activity class keeps the base package — it follows the fixed namespace
-PACKAGE="com.episode6.snapshots.headachetracker"
+# local builds are snapshots and debug builds append a .debug suffix (see
+# app/build.gradle.kts); the activity class keeps the base package — it follows
+# the fixed namespace
+PACKAGE="com.episode6.headachetracker.snapshot.debug"
 ACTIVITY="${PACKAGE}/com.episode6.headachetracker.MainActivity"
 
 serials=$(adb devices 2>/dev/null | awk 'NR>1 && $2 == "device" { print $1 }')

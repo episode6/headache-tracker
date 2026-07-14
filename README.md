@@ -39,7 +39,7 @@ All data stays on device in a SQLite database (Room). No account or network requ
 
 Install the debug APK from `app/build/outputs/apk/debug/`, or run from Android Studio on a device/emulator.
 
-Local builds are always **snapshot** builds: they install side-by-side with the released app as "Headache Tracker (SNAPSHOT)" (`com.episode6.snapshots.headachetracker`). The app version comes from `self.versions.toml`; the versionCode is derived automatically (see [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md)).
+Local builds are always **snapshot** builds: they install side-by-side with the released app as "Headache Tracker (SNAPSHOT)". Each build flavor has its own applicationId so none of them clobber each other: `com.episode6.headachetracker` (release), `com.episode6.headachetracker.snapshot` (CI snapshot APKs), plus a `.debug` suffix on debug builds. The app version comes from `self.versions.toml`; the versionCode is derived automatically (see [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md)).
 
 ## Releases
 

@@ -13,10 +13,11 @@ substitute for driving the app.
 
 ```bash
 ./gradlew :app:installDebug
-# local builds are always snapshots, so the applicationId is the snapshot one
-# (the activity class keeps the base package — it follows the fixed namespace)
-adb shell am start -n com.episode6.snapshots.headachetracker/com.episode6.headachetracker.MainActivity
-adb shell pm clear com.episode6.snapshots.headachetracker   # reset to empty state
+# local builds are snapshots and debug builds append a .debug suffix, so they coexist
+# with snapshot/release installs (the activity class keeps the base package — it
+# follows the fixed namespace)
+adb shell am start -n com.episode6.headachetracker.snapshot.debug/com.episode6.headachetracker.MainActivity
+adb shell pm clear com.episode6.headachetracker.snapshot.debug   # reset to empty state
 ```
 
 Check for a connected device first (`adb devices` — state must be `device`). With
@@ -42,8 +43,9 @@ full-year view, and export/import (JSON via system file picker).
 
 ## Gotchas
 
-- The snapshot build installs side-by-side with a released install — make sure you're
-  looking at "Headache Tracker (SNAPSHOT)", not the release app, when checking changes.
+- Debug, snapshot, and release builds all install side-by-side (three distinct
+  applicationIds) — make sure you're looking at the install you just built, not an
+  older sibling, when checking changes.
 - Entries are keyed by calendar date; "today" moves, so a fresh `pm clear` plus logging
   a known set of days gives reproducible screenshots.
 - Export/import uses the system document picker — drive it with taps (it's outside the
