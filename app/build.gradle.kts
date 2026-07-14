@@ -59,7 +59,9 @@ android {
     }
     buildTypes {
         release {
-            isMinifyEnabled = false
+            // R8 runs in full mode by default on AGP 8+; keep rules live in proguard-rules.pro
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
