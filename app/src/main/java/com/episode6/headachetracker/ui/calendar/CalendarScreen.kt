@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -247,7 +248,7 @@ private fun CalendarVerticalMonthList(
                     .padding(horizontal = 8.dp, vertical = 12.dp),
             ) {
                 Text(
-                    text = month.month.getDisplayName(TextStyle.FULL, Locale.getDefault()) +
+                    text = month.month.getDisplayName(TextStyle.FULL, LocalLocale.current.platformLocale) +
                         " ${month.year}",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
@@ -367,7 +368,7 @@ fun MonthSelectionDropdown(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = selectedMonth.getDisplayName(TextStyle.FULL, Locale.getDefault()),
+                text = selectedMonth.getDisplayName(TextStyle.FULL, LocalLocale.current.platformLocale),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )
@@ -381,7 +382,7 @@ fun MonthSelectionDropdown(
             availableMonths.forEach { month ->
                 DropdownMenuItem(
                     text = {
-                        Text(month.getDisplayName(TextStyle.FULL, Locale.getDefault()))
+                        Text(month.getDisplayName(TextStyle.FULL, LocalLocale.current.platformLocale))
                     },
                     onClick = {
                         onMonthSelected(month)

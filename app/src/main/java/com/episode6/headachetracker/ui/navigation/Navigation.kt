@@ -11,6 +11,7 @@ import androidx.compose.material3.adaptive.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.MutableCreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -72,6 +73,7 @@ fun AdaptiveCalendarScreen(
     onNavigateToFullYear: (Int) -> Unit,
 ) {
     val context = LocalContext.current
+    val resources = LocalResources.current
     val viewModelFactory = remember { context.appGraph.viewModelFactory }
     var selectedDate by rememberSaveable { mutableStateOf<String?>(null) }
 
@@ -122,18 +124,18 @@ fun AdaptiveCalendarScreen(
 
                 LaunchedEffect(viewModel) {
                     viewModel.triggerAutoExportFilePicker.collectLatest {
-                        autoExportLauncher.launch(context.getString(R.string.export_filename))
+                        autoExportLauncher.launch(resources.getString(R.string.export_filename))
                     }
                 }
 
                 LaunchedEffect(viewModel) {
                     viewModel.dataTransferMessages.collectLatest { message ->
                         val text = when (message) {
-                            is DataTransferMessage.ExportSuccess -> context.getString(
+                            is DataTransferMessage.ExportSuccess -> resources.getString(
                                 R.string.export_success,
                                 message.entryCount,
                             )
-                            is DataTransferMessage.ImportSuccess -> context.getString(
+                            is DataTransferMessage.ImportSuccess -> resources.getString(
                                 R.string.import_success,
                                 message.entryCount,
                             )
@@ -151,7 +153,7 @@ fun AdaptiveCalendarScreen(
                         selectedDate = date.toString()
                     },
                     onExportClick = {
-                        exportLauncher.launch(context.getString(R.string.export_filename))
+                        exportLauncher.launch(resources.getString(R.string.export_filename))
                     },
                     onImportClick = {
                         importLauncher.launch(arrayOf("application/json", "text/plain"))
@@ -193,7 +195,7 @@ fun AdaptiveCalendarScreen(
                                 if (isSideBySide) {
                                     Toast.makeText(
                                         context,
-                                        context.getString(R.string.entry_saved_toast),
+                                        resources.getString(R.string.entry_saved_toast),
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 } else {

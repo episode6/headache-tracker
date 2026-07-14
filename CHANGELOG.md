@@ -19,3 +19,8 @@
   coexist with CI-built snapshot APKs instead of clobbering them.
 - The day entry screen has a new optional notes section (a 3-line text box below the
   pill selection). Notes are stored with the entry and included in exports/imports.
+- Updated the Compose BOM from 2024.09.00 to 2026.06.01 (Compose UI/foundation
+  1.7.0 → 1.11.4, plus the matching Material 3 release). Locale and string-resource
+  reads in composables now go through observable APIs (`LocalLocale`,
+  `LocalResources`) per the BOM's new lint checks, so month names and UI strings
+  update immediately if the system locale changes.
