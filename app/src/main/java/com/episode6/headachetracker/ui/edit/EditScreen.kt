@@ -7,8 +7,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectableGroup
@@ -17,7 +15,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -173,29 +170,14 @@ fun EditScreen(
                 fontWeight = FontWeight.SemiBold
             )
 
-            // Nothing else on this screen is focusable in touch mode, so the
-            // notes field is handed initial focus when the pane opens, which
-            // scrolls past the severity selector and pops the keyboard.
-            // Refuse focus until the user actually touches the field.
-            var notesTouched by remember { mutableStateOf(false) }
-            val notesInteraction = remember { MutableInteractionSource() }
-            LaunchedEffect(notesInteraction) {
-                notesInteraction.interactions.collect { interaction ->
-                    if (interaction is PressInteraction.Press) notesTouched = true
-                }
-            }
-
             OutlinedTextField(
                 value = state.notes,
                 onValueChange = onNotesChanged,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .focusProperties { canFocus = notesTouched },
+                modifier = Modifier.fillMaxWidth(),
                 placeholder = { Text("Anything worth remembering? (optional)") },
                 minLines = 3,
                 maxLines = 3,
-                shape = MaterialTheme.shapes.large,
-                interactionSource = notesInteraction
+                shape = MaterialTheme.shapes.large
             )
         }
     }
@@ -235,7 +217,12 @@ fun IntensitySelector(
                 } else {
                     androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    // Focusable even in touch mode so the pane's initial focus
+                    // lands on a row instead of the notes field (which would
+                    // scroll to the bottom and pop the keyboard)
+                    .focusProperties { canFocus = true }
             ) {
                 Row(
                     modifier = Modifier
@@ -329,6 +316,8 @@ fun PillsSelector(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
+                        // Touch-mode focusable, same as the intensity rows
+                        .focusProperties { canFocus = true }
                 ) {
                     Row(
                         modifier = Modifier
