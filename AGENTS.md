@@ -243,7 +243,7 @@ Keep diffs focused. Match naming and patterns in neighboring files.
 This repo follows the episode6 app-repo shape (see `RELEASE_CHECKLIST.md`, the source of truth):
 
 - The app version lives in `self.versions.toml` (`MAJOR.MINOR.PATCH`, plain numeric). The android versionCode is **derived** in the root `build.gradle.kts` — never set versionCode/versionName by hand.
-- Every build is a **snapshot** except CI builds off a release tag: snapshots install side-by-side with the release app under `com.episode6.snapshots.headachetracker` with a ` (SNAPSHOT)` display-name suffix, and derive their versionCode from the git commit count (full history required — shallow clones fail the build).
+- Every build is a **snapshot** except CI builds off a release tag: snapshots install side-by-side with the release app under `com.episode6.snapshots.headachetracker` with a ` (SNAPSHOT)` display-name suffix, and derive their versionCode from the git commit count (full history required — shallow clones fail the build). Debug builds additionally override the applicationId to `com.episode6.debug.headachetracker`, so a local `installDebug` never clobbers an installed CI-built snapshot APK.
 - Every code change needs a `CHANGELOG.md` (or other docs) update — enforced by the `verify-docs` CI workflow. Add bullets under the top `### v<next> - Unreleased` section.
 - Releases ship a signed APK to a GitHub release via `build-installers.yml`; the process is automated by the agent skills in `.agents/` (`release-branch-skill`, `ship-release-skill`, `update-docs-skill`, `verify`).
 

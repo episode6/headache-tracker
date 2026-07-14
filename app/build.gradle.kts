@@ -78,6 +78,15 @@ android {
     }
 }
 
+androidComponents {
+    // debug builds get their own applicationId so a local ./gradlew installDebug can't
+    // clobber (or be blocked by a signature mismatch with) an installed CI-built
+    // snapshot APK; build types can only append a suffix, hence the variant API
+    onVariants(selector().withBuildType("debug")) { variant ->
+        variant.applicationId.set("com.episode6.debug.headachetracker")
+    }
+}
+
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.accompanist.permissions)
