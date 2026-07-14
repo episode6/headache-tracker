@@ -17,3 +17,9 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
         db.execSQL("ALTER TABLE headache_entries ADD COLUMN secondPillTime INTEGER")
     }
 }
+
+val MIGRATION_3_4 = object : Migration(3, 4) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE headache_entries ADD COLUMN notes TEXT")
+    }
+}

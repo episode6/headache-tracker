@@ -187,6 +187,7 @@ fun AdaptiveCalendarScreen(
                         onPillsTakenChanged = { viewModel.onPillsTakenChanged(it) },
                         onFirstPillTimeChanged = { viewModel.onFirstPillTimeChanged(it) },
                         onSecondPillTimeChanged = { viewModel.onSecondPillTimeChanged(it) },
+                        onNotesChanged = { viewModel.onNotesChanged(it) },
                         onSave = {
                             viewModel.saveEntry {
                                 if (isSideBySide) {

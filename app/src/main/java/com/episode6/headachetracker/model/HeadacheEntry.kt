@@ -9,5 +9,6 @@ data class HeadacheEntry(
     val intensity: Int, // 0 to 3
     val pillsTaken: Int = 0, // 0 to 2
     val firstPillTime: Long? = null, // Epoch millis; null unless pillsTaken >= 1
-    val secondPillTime: Long? = null // Epoch millis; null unless pillsTaken == 2
+    val secondPillTime: Long? = null, // Epoch millis; null unless pillsTaken == 2
+    val notes: String? = null // Free-form; null when blank
 )

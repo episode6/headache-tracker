@@ -46,6 +46,7 @@ fun EditScreen(
     onPillsTakenChanged: (Int) -> Unit,
     onFirstPillTimeChanged: (Long) -> Unit,
     onSecondPillTimeChanged: (Long) -> Unit,
+    onNotesChanged: (String) -> Unit,
     onSave: () -> Unit,
     onBack: () -> Unit,
 ) {
@@ -160,6 +161,22 @@ fun EditScreen(
                 onPillsChanged = onPillsTakenChanged,
                 onFirstPillTimeChanged = onFirstPillTimeChanged,
                 onSecondPillTimeChanged = onSecondPillTimeChanged
+            )
+
+            Text(
+                text = "Notes",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold
+            )
+
+            OutlinedTextField(
+                value = state.notes,
+                onValueChange = onNotesChanged,
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text("Anything worth remembering? (optional)") },
+                minLines = 3,
+                maxLines = 3,
+                shape = MaterialTheme.shapes.large
             )
         }
     }
@@ -499,6 +516,7 @@ fun EditScreenPreview() {
             onPillsTakenChanged = {},
             onFirstPillTimeChanged = {},
             onSecondPillTimeChanged = {},
+            onNotesChanged = {},
             onSave = {},
             onBack = {}
         )

@@ -18,6 +18,7 @@ data class EditState(
     val pillsTaken: Int = 0,
     val firstPillTime: Long? = null,
     val secondPillTime: Long? = null,
+    val notes: String = "",
     val isSaving: Boolean = false
 )
 
@@ -44,7 +45,8 @@ class EditViewModel @AssistedInject constructor(
                     intensity = entry.intensity,
                     pillsTaken = entry.pillsTaken,
                     firstPillTime = entry.firstPillTime,
-                    secondPillTime = entry.secondPillTime
+                    secondPillTime = entry.secondPillTime,
+                    notes = entry.notes.orEmpty()
                 )
             }
         }
@@ -77,6 +79,10 @@ class EditViewModel @AssistedInject constructor(
         _state.value = _state.value.copy(secondPillTime = time)
     }
 
+    fun onNotesChanged(notes: String) {
+        _state.value = _state.value.copy(notes = notes)
+    }
+
     fun saveEntry(onComplete: () -> Unit) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isSaving = true)
@@ -86,7 +92,8 @@ class EditViewModel @AssistedInject constructor(
                     intensity = _state.value.intensity,
                     pillsTaken = _state.value.pillsTaken,
                     firstPillTime = _state.value.firstPillTime.takeIf { _state.value.pillsTaken >= 1 },
-                    secondPillTime = _state.value.secondPillTime.takeIf { _state.value.pillsTaken >= 2 }
+                    secondPillTime = _state.value.secondPillTime.takeIf { _state.value.pillsTaken >= 2 },
+                    notes = _state.value.notes.trim().takeIf { it.isNotEmpty() }
                 )
             )
             _state.value = _state.value.copy(isSaving = false)
