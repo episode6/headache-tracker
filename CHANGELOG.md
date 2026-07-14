@@ -8,3 +8,6 @@
   `com.episode6.snapshots.headachetracker`), GitHub Actions workflows (APK builds +
   release attachment, emulator device tests, docs/changelog enforcement, version sync,
   no-snapshot-deps guard), release scripts, and in-repo agent skills.
+- Snapshot builds carry their own launcher icon (dark charcoal background; releases
+  keep the purple one) so the two side-by-side installs are distinguishable at a
+  glance.

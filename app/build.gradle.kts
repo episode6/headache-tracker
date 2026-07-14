@@ -8,6 +8,7 @@ plugins {
 
 // derived from self.versions.name in the root build script (see the formula there)
 val selfVersionCode: Int by rootProject.extra
+val selfIsSnapshot: Boolean by rootProject.extra
 val selfAppName: String by rootProject.extra
 val selfAppId: String by rootProject.extra
 
@@ -27,6 +28,14 @@ android {
         // so R + manifest class refs are unaffected)
         applicationId = selfAppId
         resValue("string", "app_name", selfAppName)
+        // snapshot builds keep the calendar foreground but swap the purple background
+        // for dark charcoal, so the two installs are distinguishable at a glance;
+        // placeholders resolve at manifest merge, so lint + resource shrinking still
+        // see the concrete @mipmap reference per build
+        manifestPlaceholders["appIcon"] =
+            if (selfIsSnapshot) "@mipmap/ic_launcher_snapshot" else "@mipmap/ic_launcher"
+        manifestPlaceholders["appIconRound"] =
+            if (selfIsSnapshot) "@mipmap/ic_launcher_round_snapshot" else "@mipmap/ic_launcher_round"
         minSdk = 26
         targetSdk = 35
         versionCode = selfVersionCode

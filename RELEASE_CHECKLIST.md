@@ -48,6 +48,8 @@ sonatype. Agent skills in [.agents/](./.agents) automate most of it
   `com.episode6.snapshots.headachetracker` (see `selfAppName` / `selfAppId` in the
   root `build.gradle.kts`; the `namespace` stays fixed at
   `com.episode6.headachetracker`, so R and manifest class references are unaffected).
+  Snapshot builds also swap in their own app icon (dark charcoal background; releases
+  keep the purple one) via `manifestPlaceholders` + the `*_snapshot` mipmaps.
 
 ### Cut new Release Branch
 
