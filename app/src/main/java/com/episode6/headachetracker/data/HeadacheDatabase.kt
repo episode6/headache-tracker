@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.episode6.headachetracker.model.HeadacheEntry
 
-@Database(entities = [HeadacheEntry::class], version = 3, exportSchema = false)
+@Database(entities = [HeadacheEntry::class], version = 4, exportSchema = false)
 abstract class HeadacheDatabase : RoomDatabase() {
     abstract fun headacheDao(): HeadacheDao
 
@@ -21,7 +21,7 @@ abstract class HeadacheDatabase : RoomDatabase() {
                     HeadacheDatabase::class.java,
                     "headache_database"
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
                     .build()
                 INSTANCE = instance
                 instance

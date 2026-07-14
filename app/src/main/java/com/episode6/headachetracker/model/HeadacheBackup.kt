@@ -18,6 +18,7 @@ data class HeadacheBackupEntry(
     val pillsTaken: Int = 0,
     val firstPillTime: Long? = null,
     val secondPillTime: Long? = null,
+    val notes: String? = null,
 )
 
 fun HeadacheEntry.toBackupEntry() = HeadacheBackupEntry(
@@ -26,6 +27,7 @@ fun HeadacheEntry.toBackupEntry() = HeadacheBackupEntry(
     pillsTaken = pillsTaken,
     firstPillTime = firstPillTime,
     secondPillTime = secondPillTime,
+    notes = notes,
 )
 
 fun HeadacheBackupEntry.toHeadacheEntry() = HeadacheEntry(
@@ -34,4 +36,5 @@ fun HeadacheBackupEntry.toHeadacheEntry() = HeadacheEntry(
     pillsTaken = pillsTaken,
     firstPillTime = firstPillTime,
     secondPillTime = secondPillTime,
+    notes = notes,
 )

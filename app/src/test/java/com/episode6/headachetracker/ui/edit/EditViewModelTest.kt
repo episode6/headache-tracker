@@ -105,6 +105,35 @@ class EditViewModelTest {
     }
 
     @Test
+    fun `loading an existing entry populates notes`() = runTest {
+        dao.entry = HeadacheEntry(date = DATE, intensity = 1, notes = "started after lunch")
+
+        val vm = viewModel()
+
+        assertEquals("started after lunch", vm.state.value.notes)
+    }
+
+    @Test
+    fun `saving trims notes`() = runTest {
+        val vm = viewModel()
+        vm.onNotesChanged("  started after lunch  ")
+
+        vm.saveEntry {}
+
+        assertEquals("started after lunch", dao.saved?.notes)
+    }
+
+    @Test
+    fun `saving blank notes stores null`() = runTest {
+        val vm = viewModel()
+        vm.onNotesChanged("   ")
+
+        vm.saveEntry {}
+
+        assertNull(dao.saved?.notes)
+    }
+
+    @Test
     fun `saving with no pills selected drops both pill times`() = runTest {
         val vm = viewModel()
         vm.onPillsTakenChanged(2)

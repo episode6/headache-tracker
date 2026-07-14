@@ -23,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
@@ -46,6 +47,7 @@ fun EditScreen(
     onPillsTakenChanged: (Int) -> Unit,
     onFirstPillTimeChanged: (Long) -> Unit,
     onSecondPillTimeChanged: (Long) -> Unit,
+    onNotesChanged: (String) -> Unit,
     onSave: () -> Unit,
     onBack: () -> Unit,
 ) {
@@ -55,6 +57,8 @@ fun EditScreen(
     val scope = rememberCoroutineScope()
 
     Scaffold(
+        // Keep the Cancel/Save bar above the keyboard while editing notes
+        modifier = Modifier.imePadding(),
         topBar = {
             TopAppBar(
                 title = { Text(text = "Log Headache", style = MaterialTheme.typography.titleLarge) }
@@ -161,6 +165,22 @@ fun EditScreen(
                 onFirstPillTimeChanged = onFirstPillTimeChanged,
                 onSecondPillTimeChanged = onSecondPillTimeChanged
             )
+
+            Text(
+                text = "Notes",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold
+            )
+
+            OutlinedTextField(
+                value = state.notes,
+                onValueChange = onNotesChanged,
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text("Anything worth remembering? (optional)") },
+                minLines = 3,
+                maxLines = 3,
+                shape = MaterialTheme.shapes.large
+            )
         }
     }
 }
@@ -199,7 +219,12 @@ fun IntensitySelector(
                 } else {
                     androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    // Focusable even in touch mode so the pane's initial focus
+                    // lands on a row instead of the notes field (which would
+                    // scroll to the bottom and pop the keyboard)
+                    .focusProperties { canFocus = true }
             ) {
                 Row(
                     modifier = Modifier
@@ -293,6 +318,8 @@ fun PillsSelector(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
+                        // Touch-mode focusable, same as the intensity rows
+                        .focusProperties { canFocus = true }
                 ) {
                     Row(
                         modifier = Modifier
@@ -499,6 +526,7 @@ fun EditScreenPreview() {
             onPillsTakenChanged = {},
             onFirstPillTimeChanged = {},
             onSecondPillTimeChanged = {},
+            onNotesChanged = {},
             onSave = {},
             onBack = {}
         )

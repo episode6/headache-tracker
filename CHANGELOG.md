@@ -17,3 +17,5 @@
   the screen, revealing the pills section.
 - Debug builds now install under their own applicationId (a `.debug` suffix) so they
   coexist with CI-built snapshot APKs instead of clobbering them.
+- The day entry screen has a new optional notes section (a 3-line text box below the
+  pill selection). Notes are stored with the entry and included in exports/imports.
