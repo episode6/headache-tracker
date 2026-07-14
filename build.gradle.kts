@@ -13,9 +13,9 @@ val selfIsSnapshot: Boolean by extra(System.getenv("GITHUB_REF")?.startsWith("re
 
 // snapshot builds carry their own app identity so they install side-by-side with
 // release builds instead of overwriting them. selfAppName is the user-facing display
-// name, selfAppId the android applicationId. (Debug builds additionally override the
-// applicationId to com.episode6.debug.headachetracker — see app/build.gradle.kts — so
-// they coexist with installed snapshot APKs too.)
+// name, selfAppId the android applicationId. (Debug builds additionally append a
+// .debug applicationIdSuffix — see app/build.gradle.kts — so they coexist with
+// installed snapshot APKs too.)
 val selfAppName: String by extra(if (selfIsSnapshot) "Headache Tracker (SNAPSHOT)" else "Headache Tracker")
 val selfAppId: String by extra(if (selfIsSnapshot) "com.episode6.snapshots.headachetracker" else "com.episode6.headachetracker")
 

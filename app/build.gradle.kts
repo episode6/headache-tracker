@@ -58,6 +58,11 @@ android {
         }
     }
     buildTypes {
+        debug {
+            // debug installs get their own id so they don't clobber (or get blocked by
+            // a signature mismatch with) an installed CI-built snapshot APK
+            applicationIdSuffix = ".debug"
+        }
         release {
             // R8 runs in full mode by default on AGP 8+; keep rules live in proguard-rules.pro
             isMinifyEnabled = true
@@ -75,15 +80,6 @@ android {
     }
     buildFeatures {
         compose = true
-    }
-}
-
-androidComponents {
-    // debug builds get their own applicationId so a local ./gradlew installDebug can't
-    // clobber (or be blocked by a signature mismatch with) an installed CI-built
-    // snapshot APK; build types can only append a suffix, hence the variant API
-    onVariants(selector().withBuildType("debug")) { variant ->
-        variant.applicationId.set("com.episode6.debug.headachetracker")
     }
 }
 

@@ -19,9 +19,9 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test. Snapshot builds (everything except CI
         // release-tag builds) install under com.episode6.snapshots.headachetracker,
-        // so only assert the shared prefix.
+        // and debug builds append a .debug suffix, so only assert the shared shape.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertTrue(appContext.packageName.endsWith("headachetracker"))
+        assertTrue(appContext.packageName.contains("headachetracker"))
         assertTrue(appContext.packageName.startsWith("com.episode6"))
     }
 }

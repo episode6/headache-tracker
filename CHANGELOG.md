@@ -15,6 +15,5 @@
   default), significantly shrinking the APK.
 - On the day entry screen, tapping a severity level smooth-scrolls to the bottom of
   the screen, revealing the pills section.
-- Debug builds now install under their own applicationId
-  (`com.episode6.debug.headachetracker`) so they coexist with CI-built snapshot APKs
-  instead of clobbering them.
+- Debug builds now install under their own applicationId (a `.debug` suffix) so they
+  coexist with CI-built snapshot APKs instead of clobbering them.
