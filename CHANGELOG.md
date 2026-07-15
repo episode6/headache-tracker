@@ -1,6 +1,6 @@
 # Headache Tracker Changelog
 
-### v1.0.0 - Unreleased
+### v1.0.0 - 2026-07-14
 
 - Committed a shared debug keystore (`debug.keystore` in the repo root, standard
   debug credentials) and pointed the debug signing config at it, so CI-built and
