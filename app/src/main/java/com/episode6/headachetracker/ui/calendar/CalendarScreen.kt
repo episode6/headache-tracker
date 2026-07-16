@@ -563,7 +563,7 @@ fun DayCell(
                             modifier = Modifier
                                 .size(4.dp)
                                 .clip(CircleShape)
-                                .background(if (isFuture) Color.White.copy(alpha = 0.5f) else Color.White)
+                                .background(if (isFuture) PillDot.copy(alpha = 0.5f) else PillDot)
                         )
                     }
                 }

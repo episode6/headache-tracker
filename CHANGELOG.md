@@ -7,6 +7,8 @@
   plus a QR code for installing it on a device. QR images are committed to the
   `episode6/qrcodes` repo and hot-linked via raw URLs (requires a
   `QRCODES_GITHUB_TOKEN` secret; without it the comment posts link-only).
+- Changed the pill indicator dots on the calendar and full-year screens from white
+  to blue, so they're easier to distinguish against the colored intensity backgrounds.
 
 ### v1.0.0 - 2026-07-14
 
