@@ -2,6 +2,13 @@
 
 ### v1.0.10 - Unreleased
 
+- Added a 2nd-pill reminder: saving today's entry with 1 pill taken now schedules a
+  local notification N minutes after the first pill was taken (via WorkManager).
+  Saving today with 0 or 2 pills cancels the pending reminder; editing past days
+  never touches it. N is configurable on the new Settings screen (reachable from
+  the calendar's 3-dots menu, default 60, clamped to 45–150 minutes), which also
+  links to the system's per-app notification settings. The app now declares
+  POST_NOTIFICATIONS and requests it on launch (Android 13+).
 - CI: after building the APK, the Build Installers workflow now comments on the
   triggering PR (or commit, for pushes) with a download link for the APK artifact
   plus a QR code for installing it on a device. QR images are committed to the

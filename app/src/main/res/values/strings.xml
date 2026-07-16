@@ -11,6 +11,13 @@
     <string name="full_year_back">Back to calendar</string>
     <string name="log_today">Log today</string>
     <string name="auto_export">Auto-Export</string>
+    <string name="settings">Settings</string>
+    <string name="second_pill_reminder_minutes_label">Minutes until 2nd-pill reminder</string>
+    <string name="second_pill_reminder_minutes_supporting">Default is 60 minutes after the first pill (45–150 allowed)</string>
+    <string name="notification_settings_button">Notification settings</string>
+    <string name="second_pill_channel_name">Pill reminders</string>
+    <string name="second_pill_notification_title">Time for your 2nd pill</string>
+    <string name="second_pill_notification_text">You logged 1 pill — take the second one if you still need it.</string>
     <string name="last_auto_export">Last Auto-Export: %1$s</string>
     <string name="never">Never</string>
 </resources>

@@ -1,5 +1,7 @@
 package com.episode6.headachetracker.ui.navigation
 
+import android.content.Intent
+import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -29,6 +31,8 @@ import com.episode6.headachetracker.ui.calendar.FullYearScreen
 import com.episode6.headachetracker.ui.calendar.FullYearViewModel
 import com.episode6.headachetracker.ui.edit.EditScreen
 import com.episode6.headachetracker.ui.edit.EditViewModel
+import com.episode6.headachetracker.ui.settings.SettingsScreen
+import com.episode6.headachetracker.ui.settings.SettingsViewModel
 import java.time.LocalDate
 import kotlinx.coroutines.flow.collectLatest
 
@@ -43,6 +47,27 @@ fun HeadacheTrackerNavigation() {
                 onNavigateToFullYear = { year ->
                     navController.navigate(Route.FullYear(year))
                 },
+                onNavigateToSettings = {
+                    navController.navigate(Route.Settings)
+                },
+            )
+        }
+        composable<Route.Settings> {
+            val context = LocalContext.current
+            val viewModelFactory = remember { context.appGraph.viewModelFactory }
+            val viewModel: SettingsViewModel = viewModel(factory = viewModelFactory)
+            val state by viewModel.state.collectAsStateWithLifecycle()
+
+            SettingsScreen(
+                state = state,
+                onReminderMinutesChanged = { viewModel.onReminderMinutesChanged(it) },
+                onOpenNotificationSettings = {
+                    context.startActivity(
+                        Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                            .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                    )
+                },
+                onBack = { navController.popBackStack() },
             )
         }
         composable<Route.FullYear> { backStackEntry ->
@@ -71,6 +96,7 @@ fun HeadacheTrackerNavigation() {
 @Composable
 fun AdaptiveCalendarScreen(
     onNavigateToFullYear: (Int) -> Unit,
+    onNavigateToSettings: () -> Unit,
 ) {
     val context = LocalContext.current
     val resources = LocalResources.current
@@ -161,6 +187,7 @@ fun AdaptiveCalendarScreen(
                     onFullYearClick = {
                         onNavigateToFullYear(state.selectedMonth.year)
                     },
+                    onSettingsClick = onNavigateToSettings,
                     onTodayEntryClick = {
                         selectedDate = LocalDate.now().toString()
                     },

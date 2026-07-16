@@ -1,9 +1,14 @@
 package com.episode6.headachetracker.di
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import com.episode6.headachetracker.HeadacheTrackerApp
 import com.episode6.headachetracker.data.HeadacheDao
 import com.episode6.headachetracker.data.HeadacheDatabase
+import com.episode6.headachetracker.data.SecondPillReminderScheduler
+import com.episode6.headachetracker.data.WorkManagerSecondPillReminderScheduler
+import com.episode6.headachetracker.data.settingsDataStore
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.Provides
@@ -12,7 +17,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 
-@DependencyGraph
+@DependencyGraph(AppScope::class)
 @SingleIn(AppScope::class)
 interface AppGraph {
 
@@ -36,4 +41,8 @@ interface AppGraph {
     @Provides
     @SingleIn(AppScope::class)
     fun provideAppScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
+    @Provides
+    @SingleIn(AppScope::class)
+    fun provideDataStore(context: Context): DataStore<Preferences> = context.settingsDataStore
 }
