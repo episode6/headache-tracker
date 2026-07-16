@@ -350,7 +350,7 @@ fun CompactDayCell(
         contentAlignment = Alignment.Center,
     ) {
         if (pillsTaken > 0) {
-            Row(horizontalArrangement = Arrangement.spacedBy(1.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
                 repeat(pillsTaken) {
                     Box(
                         modifier = Modifier
