@@ -567,7 +567,7 @@ fun DayCell(
                                 .size(6.dp)
                                 .clip(CircleShape)
                                 .background(Color.White)
-                                .border(width = 1.dp, color = PillDotRing, shape = CircleShape)
+                                .border(width = 1.5.dp, color = PillDotRing, shape = CircleShape)
                         )
                     }
                 }
