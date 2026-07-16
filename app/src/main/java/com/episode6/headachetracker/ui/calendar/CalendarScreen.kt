@@ -564,9 +564,10 @@ fun DayCell(
                     repeat(pillsTaken) {
                         Box(
                             modifier = Modifier
-                                .size(4.dp)
+                                .size(6.dp)
                                 .clip(CircleShape)
-                                .background(PillDot)
+                                .background(Color.White)
+                                .border(width = 1.dp, color = PillDotRing, shape = CircleShape)
                         )
                     }
                 }

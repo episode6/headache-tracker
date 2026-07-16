@@ -59,6 +59,6 @@ val Intensity1 = Color(0xFFFBC02D) // Yellow/Gold
 val Intensity2 = Color(0xFFF57C00) // Orange
 val Intensity3 = Color(0xFFD32F2F) // Red
 
-// Pill indicator dots are near-black for luminance contrast against every
-// intensity background (bright hues wash out on the yellow/orange cells)
-val PillDot = Color(0xFF121212)
+// Pill indicator dots are white with this dark navy ring so they stand out
+// against every intensity background
+val PillDotRing = Color(0xFF0A1F44)
