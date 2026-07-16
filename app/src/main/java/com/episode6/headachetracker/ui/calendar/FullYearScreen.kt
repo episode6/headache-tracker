@@ -351,13 +351,14 @@ fun CompactDayCell(
         contentAlignment = Alignment.Center,
     ) {
         if (pillsTaken > 0) {
-            Row(horizontalArrangement = Arrangement.spacedBy(1.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
                 repeat(pillsTaken) {
                     Box(
                         modifier = Modifier
-                            .size(3.dp)
+                            .size(5.dp)
                             .clip(CircleShape)
-                            .background(if (isFuture) Color.White.copy(alpha = 0.5f) else Color.White),
+                            .background(Color.White)
+                            .border(width = 1.5.dp, color = PillDotRing, shape = CircleShape),
                     )
                 }
             }

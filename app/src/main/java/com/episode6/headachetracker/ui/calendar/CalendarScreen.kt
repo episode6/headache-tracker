@@ -557,13 +557,17 @@ fun DayCell(
                 fontWeight = if (isToday) FontWeight.ExtraBold else FontWeight.Bold
             )
             if (pillsTaken > 0) {
-                Row(horizontalArrangement = Arrangement.spacedBy(1.dp)) {
+                Row(
+                    modifier = Modifier.padding(top = 2.dp),
+                    horizontalArrangement = Arrangement.spacedBy(2.dp)
+                ) {
                     repeat(pillsTaken) {
                         Box(
                             modifier = Modifier
-                                .size(4.dp)
+                                .size(6.dp)
                                 .clip(CircleShape)
-                                .background(if (isFuture) Color.White.copy(alpha = 0.5f) else Color.White)
+                                .background(Color.White)
+                                .border(width = 1.5.dp, color = PillDotRing, shape = CircleShape)
                         )
                     }
                 }

@@ -7,6 +7,11 @@
   plus a QR code for installing it on a device. QR images are committed to the
   `episode6/qrcodes` repo and hot-linked via raw URLs (requires a
   `QRCODES_GITHUB_TOKEN` secret; without it the comment posts link-only).
+- Restyled the pill indicator dots on the calendar and full-year screens: slightly
+  larger white dots with a thin dark-navy ring, so they're easier to distinguish
+  against the colored intensity backgrounds. Also added a little more space between
+  the dots on two-pill days, and nudged the dots slightly further below the day
+  number on the monthly calendar.
 
 ### v1.0.0 - 2026-07-14
 
