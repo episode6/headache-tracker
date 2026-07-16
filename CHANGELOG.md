@@ -9,7 +9,8 @@
   `QRCODES_GITHUB_TOKEN` secret; without it the comment posts link-only).
 - Changed the pill indicator dots on the calendar and full-year screens from white
   to near-black, so they're easier to distinguish against the colored intensity
-  backgrounds, and added a little more space between the dots on two-pill days.
+  backgrounds, added a little more space between the dots on two-pill days, and
+  nudged the dots slightly further below the day number on the monthly calendar.
 
 ### v1.0.0 - 2026-07-14
 

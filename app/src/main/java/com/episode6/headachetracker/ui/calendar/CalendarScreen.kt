@@ -557,7 +557,10 @@ fun DayCell(
                 fontWeight = if (isToday) FontWeight.ExtraBold else FontWeight.Bold
             )
             if (pillsTaken > 0) {
-                Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                Row(
+                    modifier = Modifier.padding(top = 2.dp),
+                    horizontalArrangement = Arrangement.spacedBy(2.dp)
+                ) {
                     repeat(pillsTaken) {
                         Box(
                             modifier = Modifier
