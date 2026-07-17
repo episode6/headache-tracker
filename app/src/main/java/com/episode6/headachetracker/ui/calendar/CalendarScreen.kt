@@ -62,6 +62,7 @@ fun CalendarScreen(
     onExportClick: () -> Unit,
     onImportClick: () -> Unit,
     onFullYearClick: () -> Unit,
+    onSettingsClick: () -> Unit,
     onTodayEntryClick: () -> Unit,
     onAutoExportToggled: (Boolean) -> Unit,
     snackbarHostState: SnackbarHostState,
@@ -107,6 +108,7 @@ fun CalendarScreen(
                         onExportClick = onExportClick,
                         onImportClick = onImportClick,
                         onFullYearClick = onFullYearClick,
+                        onSettingsClick = onSettingsClick,
                         onAutoExportToggled = onAutoExportToggled,
                     )
                 }
@@ -278,6 +280,7 @@ fun DataTransferMenu(
     onExportClick: () -> Unit,
     onImportClick: () -> Unit,
     onFullYearClick: () -> Unit,
+    onSettingsClick: () -> Unit,
     onAutoExportToggled: (Boolean) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -313,6 +316,13 @@ fun DataTransferMenu(
                 onClick = {
                     expanded = false
                     onImportClick()
+                },
+            )
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.settings)) },
+                onClick = {
+                    expanded = false
+                    onSettingsClick()
                 },
             )
             HorizontalDivider()
@@ -588,6 +598,7 @@ fun CalendarScreenPreview() {
             onExportClick = {},
             onImportClick = {},
             onFullYearClick = {},
+            onSettingsClick = {},
             onTodayEntryClick = {},
             onAutoExportToggled = {},
             snackbarHostState = remember { SnackbarHostState() },

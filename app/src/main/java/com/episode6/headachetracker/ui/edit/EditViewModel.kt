@@ -3,13 +3,17 @@ package com.episode6.headachetracker.ui.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.episode6.headachetracker.data.HeadacheDao
+import com.episode6.headachetracker.data.SecondPillReminderScheduler
+import com.episode6.headachetracker.data.SettingsRepository
 import com.episode6.headachetracker.model.HeadacheEntry
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
+import java.time.LocalDate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 data class EditState(
@@ -24,10 +28,13 @@ data class EditState(
 
 class EditViewModel @AssistedInject constructor(
     @Assisted private val date: String,
-    private val dao: HeadacheDao
+    private val dao: HeadacheDao,
+    private val settingsRepository: SettingsRepository,
+    private val reminderScheduler: SecondPillReminderScheduler,
 ) : ViewModel() {
 
     internal var clock: () -> Long = System::currentTimeMillis
+    internal var today: () -> LocalDate = LocalDate::now
 
     @AssistedFactory
     fun interface Factory {
@@ -86,18 +93,36 @@ class EditViewModel @AssistedInject constructor(
     fun saveEntry(onComplete: () -> Unit) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isSaving = true)
-            dao.upsertEntry(
-                HeadacheEntry(
-                    date = date,
-                    intensity = _state.value.intensity,
-                    pillsTaken = _state.value.pillsTaken,
-                    firstPillTime = _state.value.firstPillTime.takeIf { _state.value.pillsTaken >= 1 },
-                    secondPillTime = _state.value.secondPillTime.takeIf { _state.value.pillsTaken >= 2 },
-                    notes = _state.value.notes.trim().takeIf { it.isNotEmpty() }
-                )
+            val entry = HeadacheEntry(
+                date = date,
+                intensity = _state.value.intensity,
+                pillsTaken = _state.value.pillsTaken,
+                firstPillTime = _state.value.firstPillTime.takeIf { _state.value.pillsTaken >= 1 },
+                secondPillTime = _state.value.secondPillTime.takeIf { _state.value.pillsTaken >= 2 },
+                notes = _state.value.notes.trim().takeIf { it.isNotEmpty() }
             )
+            dao.upsertEntry(entry)
+            updateSecondPillReminder(entry)
             _state.value = _state.value.copy(isSaving = false)
             onComplete()
+        }
+    }
+
+    // Only today's entry can own the pending 2nd-pill reminder; edits to other days
+    // must never schedule or clear it.
+    private suspend fun updateSecondPillReminder(entry: HeadacheEntry) {
+        if (entry.date != today().toString()) return
+        val firstPillTime = entry.firstPillTime
+        if (entry.pillsTaken == 1 && firstPillTime != null) {
+            val delayMinutes = settingsRepository.secondPillReminderMinutes.first()
+            val fireAt = firstPillTime + delayMinutes * 60_000L
+            if (fireAt > clock()) {
+                reminderScheduler.schedule(fireAt)
+            } else {
+                reminderScheduler.cancel()
+            }
+        } else {
+            reminderScheduler.cancel()
         }
     }
 }
