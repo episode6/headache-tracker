@@ -18,12 +18,17 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val initialEditDate = intent.getStringExtra(EXTRA_EDIT_DATE)
         setContent {
             HeadacheTrackerTheme {
                 RequestNotificationPermission()
-                HeadacheTrackerNavigation()
+                HeadacheTrackerNavigation(initialEditDate = initialEditDate)
             }
         }
+    }
+
+    companion object {
+        const val EXTRA_EDIT_DATE = "extra_edit_date"
     }
 }
 

@@ -3,6 +3,7 @@ package com.episode6.headachetracker.data
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
@@ -24,6 +25,8 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         val AUTO_EXPORT_URI = stringPreferencesKey("auto_export_uri")
         val LAST_AUTO_EXPORT_TIMESTAMP = longPreferencesKey("last_auto_export_timestamp")
         val SECOND_PILL_REMINDER_MINUTES = intPreferencesKey("second_pill_reminder_minutes")
+        val MORNING_CHECK_IN_ENABLED = booleanPreferencesKey("morning_check_in_enabled")
+        val MORNING_CHECK_IN_TIME_MINUTES = intPreferencesKey("morning_check_in_time_minutes")
     }
 
     val autoExportUri: Flow<String?> = dataStore.data.map { preferences ->
@@ -36,6 +39,14 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
 
     val secondPillReminderMinutes: Flow<Int> = dataStore.data.map { preferences ->
         preferences[Keys.SECOND_PILL_REMINDER_MINUTES] ?: DEFAULT_SECOND_PILL_REMINDER_MINUTES
+    }
+
+    val morningCheckInEnabled: Flow<Boolean> = dataStore.data.map { preferences ->
+        preferences[Keys.MORNING_CHECK_IN_ENABLED] ?: true
+    }
+
+    val morningCheckInTimeMinutes: Flow<Int> = dataStore.data.map { preferences ->
+        preferences[Keys.MORNING_CHECK_IN_TIME_MINUTES] ?: DEFAULT_MORNING_CHECK_IN_TIME_MINUTES
     }
 
     suspend fun setAutoExportUri(uri: String?) {
@@ -65,6 +76,19 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         }
     }
 
+    suspend fun setMorningCheckInEnabled(enabled: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[Keys.MORNING_CHECK_IN_ENABLED] = enabled
+        }
+    }
+
+    suspend fun setMorningCheckInTimeMinutes(minutesOfDay: Int) {
+        dataStore.edit { preferences ->
+            preferences[Keys.MORNING_CHECK_IN_TIME_MINUTES] =
+                minutesOfDay.coerceIn(0, MINUTES_PER_DAY - 1)
+        }
+    }
+
     suspend fun clearAutoExportSettings() {
         dataStore.edit { preferences ->
             preferences.remove(Keys.AUTO_EXPORT_URI)
@@ -76,5 +100,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         const val DEFAULT_SECOND_PILL_REMINDER_MINUTES = 60
         const val MIN_REMINDER_MINUTES = 45
         const val MAX_REMINDER_MINUTES = 150
+        const val DEFAULT_MORNING_CHECK_IN_TIME_MINUTES = 8 * 60
+        const val MINUTES_PER_DAY = 24 * 60
     }
 }
