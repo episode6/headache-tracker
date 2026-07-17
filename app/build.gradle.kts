@@ -92,6 +92,51 @@ android {
     }
 }
 
+// LicenseNotices.kt embeds THIRD_PARTY_LICENSES.md so the in-app licenses screen always
+// shows the same document the repo ships
+abstract class GenerateLicenseNoticesTask : DefaultTask() {
+    @get:InputFile
+    abstract val noticesFile: RegularFileProperty
+
+    @get:OutputDirectory
+    abstract val outDir: DirectoryProperty
+
+    @TaskAction
+    fun generate() {
+        val escaped = noticesFile.get().asFile.readText()
+            .replace("\\", "\\\\")
+            .replace("\"", "\\\"")
+            .replace("$", "\\$")
+            .replace("\r", "")
+            .replace("\n", "\\n")
+        val outFile = outDir.get().file("com/episode6/headachetracker/LicenseNotices.kt").asFile
+        outFile.parentFile.mkdirs()
+        outFile.writeText(
+            """
+            |package com.episode6.headachetracker
+            |
+            |/** Generated from THIRD_PARTY_LICENSES.md at build time; do not edit. */
+            |object LicenseNotices {
+            |    const val MARKDOWN: String = "$escaped"
+            |}
+            |""".trimMargin()
+        )
+    }
+}
+
+val generateLicenseNotices = tasks.register<GenerateLicenseNoticesTask>("generateLicenseNotices") {
+    noticesFile.set(rootProject.layout.projectDirectory.file("THIRD_PARTY_LICENSES.md"))
+}
+
+androidComponents {
+    onVariants { variant ->
+        variant.sources.kotlin?.addGeneratedSourceDirectory(
+            generateLicenseNotices,
+            GenerateLicenseNoticesTask::outDir,
+        )
+    }
+}
+
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.accompanist.permissions)
