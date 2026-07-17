@@ -13,27 +13,17 @@ The app ships with the following libraries, used under the **Apache License 2.0*
   (coroutines, serialization) — © JetBrains s.r.o. and Kotlin contributors —
   <https://kotlinlang.org>
 - **AndroidX / Jetpack** (Activity, AppCompat, Compose UI, Compose Material 3 +
-  Adaptive, Core, DataStore, Lifecycle, Navigation, Room, SQLite, CameraX, Window,
-  and their support artifacts) — © The Android Open Source Project —
+  Adaptive, Core, DataStore, Lifecycle, Navigation, Room, SQLite, Window, and
+  their support artifacts) — © The Android Open Source Project —
   <https://developer.android.com/jetpack>
 - **Material Components for Android** — © The Android Open Source Project —
   <https://github.com/material-components/material-components-android>
-- **Accompanist** (permissions, drawablepainter) — © Google LLC —
+- **Accompanist** (permissions) — © Google LLC —
   <https://github.com/google/accompanist>
-- **OkHttp** — © Square, Inc. — <https://square.github.io/okhttp/>
-- **Okio** — © Square, Inc. — <https://square.github.io/okio/>
-- **Retrofit** — © Square, Inc. — <https://square.github.io/retrofit/>
-- **Moshi** — © Square, Inc. — <https://github.com/square/moshi>
-- **Coil** — © Coil Contributors — <https://github.com/coil-kt/coil>
+- **Okio** (via DataStore) — © Square, Inc. — <https://square.github.io/okio/>
 - **Metro** runtime — © Zac Sweers — <https://github.com/ZacSweers/metro>
-- **Guava ListenableFuture**, **AutoValue** annotations, and **Error Prone**
-  annotations — © Google LLC — <https://github.com/google/guava>
+- **Guava ListenableFuture** and **Error Prone** annotations — © Google LLC —
+  <https://github.com/google/guava>
 - **JSpecify** annotations — © The JSpecify Authors — <https://jspecify.dev>
 - **JetBrains Java annotations** — © JetBrains s.r.o. —
   <https://github.com/JetBrains/java-annotations>
-
-## Google Play services
-
-The app ships with the **Google Play services** client libraries (location, base,
-basement, tasks) — © Google LLC — provided under the Android Software Development
-Kit License Agreement (<https://developer.android.com/studio/terms>).

@@ -6,6 +6,9 @@
   notices). The notices live in `THIRD_PARTY_LICENSES.md` at the repo root and are
   embedded into the app at build time, so the in-app screen always matches the
   document the repo ships.
+- Removed unused dependencies (Retrofit, Moshi, OkHttp + logging-interceptor,
+  Coil, CameraX, Play Services Location), shrinking the APK and the third-party
+  license notices.
 
 - Tapping the 2nd-pill reminder notification now opens the app directly to
   today's edit screen (matching the morning check-in's tap behavior).
