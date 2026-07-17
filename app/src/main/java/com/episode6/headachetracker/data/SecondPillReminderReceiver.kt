@@ -11,6 +11,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.episode6.headachetracker.MainActivity
 import com.episode6.headachetracker.R
+import java.time.LocalDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -36,7 +37,8 @@ class SecondPillReminderReceiver : BroadcastReceiver() {
             val contentIntent = PendingIntent.getActivity(
                 context,
                 0,
-                Intent(context, MainActivity::class.java),
+                Intent(context, MainActivity::class.java)
+                    .putExtra(MainActivity.EXTRA_EDIT_DATE, LocalDate.now().toString()),
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
             )
             val notification = NotificationCompat.Builder(context, CHANNEL_ID)

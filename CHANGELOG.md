@@ -2,6 +2,8 @@
 
 ### v1.0.10 - Unreleased
 
+- Tapping the 2nd-pill reminder notification now opens the app directly to
+  today's edit screen (matching the morning check-in's tap behavior).
 - Added a morning check-in notification that asks each morning whether you had a
   headache yesterday; tapping it opens the app directly to yesterday's edit screen.
   Configurable on the Settings screen: an on/off toggle (default on) and a time-of-day
