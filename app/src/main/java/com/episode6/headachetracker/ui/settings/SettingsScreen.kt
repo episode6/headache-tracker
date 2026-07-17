@@ -50,6 +50,7 @@ fun SettingsScreen(
     onMorningCheckInToggled: (Boolean) -> Unit,
     onMorningCheckInTimeChanged: (hour: Int, minute: Int) -> Unit,
     onOpenNotificationSettings: () -> Unit,
+    onLicensesClick: () -> Unit,
     onBack: () -> Unit,
 ) {
     var showTimePicker by remember { mutableStateOf(false) }
@@ -136,6 +137,17 @@ fun SettingsScreen(
             OutlinedButton(onClick = onOpenNotificationSettings) {
                 Text(stringResource(R.string.notification_settings_button))
             }
+
+            HorizontalDivider()
+
+            Text(
+                text = stringResource(R.string.licenses_menu_item),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onLicensesClick() },
+            )
         }
     }
 
@@ -181,6 +193,7 @@ fun SettingsScreenPreview() {
             onMorningCheckInToggled = {},
             onMorningCheckInTimeChanged = { _, _ -> },
             onOpenNotificationSettings = {},
+            onLicensesClick = {},
             onBack = {},
         )
     }

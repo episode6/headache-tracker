@@ -233,7 +233,7 @@ Keep diffs focused. Match naming and patterns in neighboring files.
 ./gradlew test             # unit tests (minimal coverage today)
 ```
 
-- **KSP** for Room and Moshi codegen
+- **KSP** for Room codegen
 - **Compose BOM** pins Compose library versions (`gradle/libs.versions.toml`)
 - **compileSdk / targetSdk**: 35; **minSdk**: 26
 - Version catalog: `gradle/libs.versions.toml` (dependencies); `self.versions.toml` (the app's own version — single source of truth)
@@ -267,7 +267,7 @@ The repo has placeholder `ExampleUnitTest` / `ExampleInstrumentedTest` only. The
 | ViewModel in Composables | Always pass `viewModelFactory` from `context.appGraph`; use `key =` for parameterized VMs. |
 | Date format | Store and pass dates as `LocalDate.toString()` (`YYYY-MM-DD`) consistently. |
 | Unused routes | `Route.EditEntry` exists for type-safe nav extensibility; edit currently uses adaptive pane state instead. |
-| Gradle deps | Several libraries in `build.gradle.kts` (Retrofit, Camera, Location) are unused by app code — do not build features around them without confirming. |
+| Gradle deps | New dependencies must appear in `THIRD_PARTY_LICENSES.md` (grouped by license), which is embedded into the app at build time. |
 
 ---
 

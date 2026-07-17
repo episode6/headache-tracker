@@ -92,14 +92,55 @@ android {
     }
 }
 
+// LicenseNotices.kt embeds THIRD_PARTY_LICENSES.md so the in-app licenses screen always
+// shows the same document the repo ships
+abstract class GenerateLicenseNoticesTask : DefaultTask() {
+    @get:InputFile
+    abstract val noticesFile: RegularFileProperty
+
+    @get:OutputDirectory
+    abstract val outDir: DirectoryProperty
+
+    @TaskAction
+    fun generate() {
+        val escaped = noticesFile.get().asFile.readText()
+            .replace("\\", "\\\\")
+            .replace("\"", "\\\"")
+            .replace("$", "\\$")
+            .replace("\r", "")
+            .replace("\n", "\\n")
+        val outFile = outDir.get().file("com/episode6/headachetracker/LicenseNotices.kt").asFile
+        outFile.parentFile.mkdirs()
+        outFile.writeText(
+            """
+            |package com.episode6.headachetracker
+            |
+            |/** Generated from THIRD_PARTY_LICENSES.md at build time; do not edit. */
+            |object LicenseNotices {
+            |    const val MARKDOWN: String = "$escaped"
+            |}
+            |""".trimMargin()
+        )
+    }
+}
+
+val generateLicenseNotices = tasks.register<GenerateLicenseNoticesTask>("generateLicenseNotices") {
+    noticesFile.set(rootProject.layout.projectDirectory.file("THIRD_PARTY_LICENSES.md"))
+}
+
+androidComponents {
+    onVariants { variant ->
+        variant.sources.kotlin?.addGeneratedSourceDirectory(
+            generateLicenseNotices,
+            GenerateLicenseNoticesTask::outDir,
+        )
+    }
+}
+
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.accompanist.permissions)
     implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.camera.camera2)
-    implementation(libs.androidx.camera.core)
-    implementation(libs.androidx.camera.lifecycle)
-    implementation(libs.androidx.camera.view)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.compose.adaptive)
     implementation(libs.androidx.compose.adaptive.layout)
@@ -117,19 +158,12 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.runtime)
-    implementation(libs.coil.compose)
-    implementation(libs.converter.moshi)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.logging.interceptor)
     implementation(libs.material)
     implementation(libs.metro.runtime)
-    implementation(libs.moshi.kotlin)
-    implementation(libs.okhttp)
-    implementation(libs.play.services.location)
-    implementation(libs.retrofit)
     testImplementation(libs.androidx.core)
     testImplementation(libs.androidx.junit)
     testImplementation(libs.junit)
@@ -143,5 +177,4 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
     "ksp"(libs.androidx.room.compiler)
-    "ksp"(libs.moshi.kotlin.codegen)
 }

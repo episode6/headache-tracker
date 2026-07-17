@@ -30,6 +30,7 @@ import com.episode6.headachetracker.ui.calendar.DataTransferMessage
 import com.episode6.headachetracker.ui.calendar.FullYearScreen
 import com.episode6.headachetracker.ui.calendar.FullYearViewModel
 import com.episode6.headachetracker.ui.edit.EditScreen
+import com.episode6.headachetracker.ui.licenses.LicensesScreen
 import com.episode6.headachetracker.ui.edit.EditViewModel
 import com.episode6.headachetracker.ui.settings.SettingsScreen
 import com.episode6.headachetracker.ui.settings.SettingsViewModel
@@ -72,8 +73,12 @@ fun HeadacheTrackerNavigation(initialEditDate: String? = null) {
                             .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
                     )
                 },
+                onLicensesClick = { navController.navigate(Route.Licenses) },
                 onBack = { navController.popBackStack() },
             )
+        }
+        composable<Route.Licenses> {
+            LicensesScreen(onBack = { navController.popBackStack() })
         }
         composable<Route.FullYear> { backStackEntry ->
             val route = backStackEntry.toRoute<Route.FullYear>()
