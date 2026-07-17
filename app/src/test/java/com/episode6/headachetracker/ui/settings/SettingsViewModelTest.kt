@@ -14,6 +14,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -110,5 +111,33 @@ class SettingsViewModelTest {
         vm.onReminderMinutesChanged("123456")
 
         assertEquals("1234", vm.state.value.reminderMinutesText)
+    }
+
+    @Test
+    fun `morning check-in defaults to enabled at 8am`() = runTest {
+        val vm = SettingsViewModel(settingsRepository)
+
+        assertTrue(vm.state.value.morningCheckInEnabled)
+        assertEquals(8 * 60, vm.state.value.morningCheckInTimeMinutes)
+    }
+
+    @Test
+    fun `toggling morning check-in off persists`() = runTest {
+        val vm = SettingsViewModel(settingsRepository)
+
+        vm.onMorningCheckInToggled(false)
+
+        assertFalse(vm.state.value.morningCheckInEnabled)
+        assertFalse(settingsRepository.morningCheckInEnabled.first())
+    }
+
+    @Test
+    fun `changing the check-in time persists minutes of day`() = runTest {
+        val vm = SettingsViewModel(settingsRepository)
+
+        vm.onMorningCheckInTimeChanged(hour = 6, minute = 45)
+
+        assertEquals(6 * 60 + 45, vm.state.value.morningCheckInTimeMinutes)
+        assertEquals(6 * 60 + 45, settingsRepository.morningCheckInTimeMinutes.first())
     }
 }

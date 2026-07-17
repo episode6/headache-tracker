@@ -12,6 +12,8 @@ import kotlinx.coroutines.launch
 
 data class SettingsState(
     val reminderMinutesText: String = "",
+    val morningCheckInEnabled: Boolean = true,
+    val morningCheckInTimeMinutes: Int = SettingsRepository.DEFAULT_MORNING_CHECK_IN_TIME_MINUTES,
     val isLoaded: Boolean = false,
 )
 
@@ -25,9 +27,10 @@ class SettingsViewModel(
 
     init {
         viewModelScope.launch {
-            val minutes = settingsRepository.secondPillReminderMinutes.first()
             _state.value = SettingsState(
-                reminderMinutesText = minutes.toString(),
+                reminderMinutesText = settingsRepository.secondPillReminderMinutes.first().toString(),
+                morningCheckInEnabled = settingsRepository.morningCheckInEnabled.first(),
+                morningCheckInTimeMinutes = settingsRepository.morningCheckInTimeMinutes.first(),
                 isLoaded = true,
             )
         }
@@ -39,6 +42,21 @@ class SettingsViewModel(
         val minutes = digits.toIntOrNull() ?: return
         viewModelScope.launch {
             settingsRepository.setSecondPillReminderMinutes(minutes)
+        }
+    }
+
+    fun onMorningCheckInToggled(enabled: Boolean) {
+        _state.value = _state.value.copy(morningCheckInEnabled = enabled)
+        viewModelScope.launch {
+            settingsRepository.setMorningCheckInEnabled(enabled)
+        }
+    }
+
+    fun onMorningCheckInTimeChanged(hour: Int, minute: Int) {
+        val minutesOfDay = hour * 60 + minute
+        _state.value = _state.value.copy(morningCheckInTimeMinutes = minutesOfDay)
+        viewModelScope.launch {
+            settingsRepository.setMorningCheckInTimeMinutes(minutesOfDay)
         }
     }
 }

@@ -38,12 +38,13 @@ import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-fun HeadacheTrackerNavigation() {
+fun HeadacheTrackerNavigation(initialEditDate: String? = null) {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Route.Calendar) {
         composable<Route.Calendar> {
             AdaptiveCalendarScreen(
+                initialSelectedDate = initialEditDate,
                 onNavigateToFullYear = { year ->
                     navController.navigate(Route.FullYear(year))
                 },
@@ -61,6 +62,10 @@ fun HeadacheTrackerNavigation() {
             SettingsScreen(
                 state = state,
                 onReminderMinutesChanged = { viewModel.onReminderMinutesChanged(it) },
+                onMorningCheckInToggled = { viewModel.onMorningCheckInToggled(it) },
+                onMorningCheckInTimeChanged = { hour, minute ->
+                    viewModel.onMorningCheckInTimeChanged(hour, minute)
+                },
                 onOpenNotificationSettings = {
                     context.startActivity(
                         Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
@@ -97,11 +102,12 @@ fun HeadacheTrackerNavigation() {
 fun AdaptiveCalendarScreen(
     onNavigateToFullYear: (Int) -> Unit,
     onNavigateToSettings: () -> Unit,
+    initialSelectedDate: String? = null,
 ) {
     val context = LocalContext.current
     val resources = LocalResources.current
     val viewModelFactory = remember { context.appGraph.viewModelFactory }
-    var selectedDate by rememberSaveable { mutableStateOf<String?>(null) }
+    var selectedDate by rememberSaveable { mutableStateOf(initialSelectedDate) }
 
     val adaptiveInfo = currentWindowAdaptiveInfo()
     val directive = calculatePaneScaffoldDirective(adaptiveInfo)
