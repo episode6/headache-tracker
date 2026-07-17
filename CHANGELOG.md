@@ -2,6 +2,10 @@
 
 ### v1.0.10 - Unreleased
 
+- Added a morning check-in notification that asks each morning whether you had a
+  headache yesterday; tapping it opens the app directly to yesterday's edit screen.
+  Configurable on the Settings screen: an on/off toggle (default on) and a time-of-day
+  picker (default 8:00 AM local). Scheduled via a self-rechaining WorkManager job.
 - Added a 2nd-pill reminder: saving today's entry with 1 pill taken now schedules a
   local notification N minutes after the first pill was taken (via WorkManager).
   Saving today with 0 or 2 pills cancels the pending reminder; editing past days

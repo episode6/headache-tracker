@@ -15,6 +15,14 @@
     <string name="second_pill_reminder_minutes_label">Minutes until 2nd-pill reminder</string>
     <string name="second_pill_reminder_minutes_supporting">Default is 60 minutes after the first pill (45–150 allowed)</string>
     <string name="notification_settings_button">Notification settings</string>
+    <string name="morning_check_in_setting_label">Morning check-in</string>
+    <string name="morning_check_in_setting_supporting">Ask each morning whether you had a headache yesterday</string>
+    <string name="morning_check_in_time_label">Check-in time</string>
+    <string name="morning_check_in_channel_name">Morning check-in</string>
+    <string name="morning_check_in_notification_title">Did you have a headache yesterday?</string>
+    <string name="morning_check_in_notification_text">Tap to review and log yesterday\'s entry.</string>
+    <string name="dialog_ok">OK</string>
+    <string name="dialog_cancel">Cancel</string>
     <string name="second_pill_channel_name">Pill reminders</string>
     <string name="second_pill_notification_title">Time for your 2nd pill</string>
     <string name="second_pill_notification_text">You logged 1 pill — take the second one if you still need it.</string>
