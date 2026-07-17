@@ -289,12 +289,12 @@ private class FakeSecondPillReminderScheduler : SecondPillReminderScheduler {
     var scheduleCount = 0
     var cancelCount = 0
 
-    override fun schedule(fireAtMillis: Long) {
+    override suspend fun schedule(fireAtMillis: Long) {
         scheduledAt = fireAtMillis
         scheduleCount++
     }
 
-    override fun cancel() {
+    override suspend fun cancel() {
         cancelCount++
     }
 }

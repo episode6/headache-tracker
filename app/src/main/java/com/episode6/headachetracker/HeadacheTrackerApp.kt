@@ -4,8 +4,8 @@ import android.app.Application
 import android.content.Context
 import com.episode6.headachetracker.data.AutoExportManager
 import com.episode6.headachetracker.data.MorningCheckInManager
-import com.episode6.headachetracker.data.MorningCheckInWorker
-import com.episode6.headachetracker.data.SecondPillReminderWorker
+import com.episode6.headachetracker.data.MorningCheckInReceiver
+import com.episode6.headachetracker.data.SecondPillReminderReceiver
 import com.episode6.headachetracker.di.AppGraph
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.createGraphFactory
@@ -23,8 +23,8 @@ class HeadacheTrackerApp : Application() {
         appGraph.inject(this)
         autoExportManager.startObserving()
         morningCheckInManager.startObserving()
-        SecondPillReminderWorker.ensureNotificationChannel(this)
-        MorningCheckInWorker.ensureNotificationChannel(this)
+        SecondPillReminderReceiver.ensureNotificationChannel(this)
+        MorningCheckInReceiver.ensureNotificationChannel(this)
     }
 }
 

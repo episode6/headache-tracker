@@ -27,6 +27,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         val SECOND_PILL_REMINDER_MINUTES = intPreferencesKey("second_pill_reminder_minutes")
         val MORNING_CHECK_IN_ENABLED = booleanPreferencesKey("morning_check_in_enabled")
         val MORNING_CHECK_IN_TIME_MINUTES = intPreferencesKey("morning_check_in_time_minutes")
+        val PENDING_SECOND_PILL_REMINDER_AT = longPreferencesKey("pending_second_pill_reminder_at")
     }
 
     val autoExportUri: Flow<String?> = dataStore.data.map { preferences ->
@@ -47,6 +48,11 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
 
     val morningCheckInTimeMinutes: Flow<Int> = dataStore.data.map { preferences ->
         preferences[Keys.MORNING_CHECK_IN_TIME_MINUTES] ?: DEFAULT_MORNING_CHECK_IN_TIME_MINUTES
+    }
+
+    // not a user setting: alarm state persisted so a reboot can restore the alarm
+    val pendingSecondPillReminderAt: Flow<Long?> = dataStore.data.map { preferences ->
+        preferences[Keys.PENDING_SECOND_PILL_REMINDER_AT]
     }
 
     suspend fun setAutoExportUri(uri: String?) {
@@ -79,6 +85,16 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
     suspend fun setMorningCheckInEnabled(enabled: Boolean) {
         dataStore.edit { preferences ->
             preferences[Keys.MORNING_CHECK_IN_ENABLED] = enabled
+        }
+    }
+
+    suspend fun setPendingSecondPillReminderAt(fireAtMillis: Long?) {
+        dataStore.edit { preferences ->
+            if (fireAtMillis == null) {
+                preferences.remove(Keys.PENDING_SECOND_PILL_REMINDER_AT)
+            } else {
+                preferences[Keys.PENDING_SECOND_PILL_REMINDER_AT] = fireAtMillis
+            }
         }
     }
 
