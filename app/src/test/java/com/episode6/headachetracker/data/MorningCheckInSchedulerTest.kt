@@ -10,37 +10,38 @@ class MorningCheckInSchedulerTest {
     private val zone = ZoneId.of("America/New_York")
     private val eightAm = 8 * 60
 
-    private fun millisAt(hour: Int, minute: Int, day: Int = 15): Long =
-        ZonedDateTime.of(2026, 7, day, hour, minute, 0, 0, zone).toInstant().toEpochMilli()
+    private fun millisAt(hour: Int, minute: Int, day: Int = 15, month: Int = 7): Long =
+        ZonedDateTime.of(2026, month, day, hour, minute, 0, 0, zone).toInstant().toEpochMilli()
 
     @Test
     fun `before the target time schedules for later today`() {
-        val delay = nextOccurrenceDelayMillis(millisAt(6, 30), zone, eightAm)
+        val triggerAt = nextOccurrenceMillis(millisAt(6, 30), zone, eightAm)
 
-        assertEquals(90 * 60_000L, delay)
+        assertEquals(millisAt(8, 0), triggerAt)
     }
 
     @Test
     fun `after the target time schedules for tomorrow`() {
-        val delay = nextOccurrenceDelayMillis(millisAt(9, 0), zone, eightAm)
+        val triggerAt = nextOccurrenceMillis(millisAt(9, 0), zone, eightAm)
 
-        assertEquals(23 * 60 * 60_000L, delay)
+        assertEquals(millisAt(8, 0, day = 16), triggerAt)
     }
 
     @Test
     fun `exactly at the target time schedules for tomorrow`() {
-        val delay = nextOccurrenceDelayMillis(millisAt(8, 0), zone, eightAm)
+        val triggerAt = nextOccurrenceMillis(millisAt(8, 0), zone, eightAm)
 
-        assertEquals(24 * 60 * 60_000L, delay)
+        assertEquals(millisAt(8, 0, day = 16), triggerAt)
     }
 
     @Test
-    fun `spring-forward DST day still yields a next-day occurrence`() {
+    fun `spring-forward DST day still targets 8am local`() {
         // 2026-03-08 02:00 EST -> 03:00 EDT; day is only 23h long
-        val nowMillis = ZonedDateTime.of(2026, 3, 7, 9, 0, 0, 0, zone).toInstant().toEpochMilli()
+        val nowMillis = millisAt(9, 0, day = 7, month = 3)
 
-        val delay = nextOccurrenceDelayMillis(nowMillis, zone, eightAm)
+        val triggerAt = nextOccurrenceMillis(nowMillis, zone, eightAm)
 
-        assertEquals(22 * 60 * 60_000L, delay)
+        assertEquals(millisAt(8, 0, day = 8, month = 3), triggerAt)
+        assertEquals(22 * 60 * 60_000L, triggerAt - nowMillis)
     }
 }

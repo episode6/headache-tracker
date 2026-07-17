@@ -1,43 +1,31 @@
 package com.episode6.headachetracker.data
 
 import android.content.Context
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
-import java.util.concurrent.TimeUnit
 
 interface SecondPillReminderScheduler {
-    fun schedule(fireAtMillis: Long)
-    fun cancel()
+    suspend fun schedule(fireAtMillis: Long)
+    suspend fun cancel()
 }
 
 @Inject
 @SingleIn(AppScope::class)
 @ContributesBinding(AppScope::class)
-class WorkManagerSecondPillReminderScheduler(
+class AlarmManagerSecondPillReminderScheduler(
     private val context: Context,
+    private val settingsRepository: SettingsRepository,
 ) : SecondPillReminderScheduler {
 
-    override fun schedule(fireAtMillis: Long) {
-        val delayMillis = (fireAtMillis - System.currentTimeMillis()).coerceAtLeast(0L)
-        WorkManager.getInstance(context).enqueueUniqueWork(
-            WORK_NAME,
-            ExistingWorkPolicy.REPLACE,
-            OneTimeWorkRequestBuilder<SecondPillReminderWorker>()
-                .setInitialDelay(delayMillis, TimeUnit.MILLISECONDS)
-                .build(),
-        )
+    override suspend fun schedule(fireAtMillis: Long) {
+        settingsRepository.setPendingSecondPillReminderAt(fireAtMillis)
+        context.setExactAlarmCompat(fireAtMillis, SecondPillReminderReceiver.pendingIntent(context))
     }
 
-    override fun cancel() {
-        WorkManager.getInstance(context).cancelUniqueWork(WORK_NAME)
-    }
-
-    companion object {
-        const val WORK_NAME = "second_pill_reminder"
+    override suspend fun cancel() {
+        settingsRepository.setPendingSecondPillReminderAt(null)
+        context.cancelAlarm(SecondPillReminderReceiver.pendingIntent(context))
     }
 }

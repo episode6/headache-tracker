@@ -6,8 +6,6 @@ import androidx.datastore.preferences.core.Preferences
 import com.episode6.headachetracker.HeadacheTrackerApp
 import com.episode6.headachetracker.data.HeadacheDao
 import com.episode6.headachetracker.data.HeadacheDatabase
-import com.episode6.headachetracker.data.SecondPillReminderScheduler
-import com.episode6.headachetracker.data.WorkManagerSecondPillReminderScheduler
 import com.episode6.headachetracker.data.settingsDataStore
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.DependencyGraph

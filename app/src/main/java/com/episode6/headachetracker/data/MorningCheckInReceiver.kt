@@ -4,29 +4,38 @@ import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.work.CoroutineWorker
-import androidx.work.WorkerParameters
 import com.episode6.headachetracker.MainActivity
 import com.episode6.headachetracker.R
 import java.time.LocalDate
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
-class MorningCheckInWorker(
-    context: Context,
-    workerParams: WorkerParameters,
-) : CoroutineWorker(context, workerParams) {
+class MorningCheckInReceiver : BroadcastReceiver() {
+
+    override fun onReceive(context: Context, intent: Intent) {
+        val pendingResult = goAsync()
+        CoroutineScope(Dispatchers.Default).launch {
+            try {
+                handle(context.applicationContext)
+            } finally {
+                pendingResult.finish()
+            }
+        }
+    }
 
     // guarded by areNotificationsEnabled(); notify() never fires without permission
     @SuppressLint("MissingPermission")
-    override suspend fun doWork(): Result {
-        val context = applicationContext
+    internal suspend fun handle(context: Context) {
         val settings = SettingsRepository(context.settingsDataStore)
         if (!settings.morningCheckInEnabled.first()) {
-            return Result.success()
+            return
         }
 
         ensureNotificationChannel(context)
@@ -49,17 +58,22 @@ class MorningCheckInWorker(
             NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, notification)
         }
 
-        // self-rechain for tomorrow so the daily check-in survives without app launches;
-        // the manager's REPLACE on app start resets the chain so it can't grow unboundedly
-        WorkManagerMorningCheckInScheduler(context)
-            .scheduleNextAppended(settings.morningCheckInTimeMinutes.first())
-        return Result.success()
+        // re-arm for tomorrow so the daily check-in survives without app launches
+        AlarmManagerMorningCheckInScheduler(context)
+            .scheduleNext(settings.morningCheckInTimeMinutes.first())
     }
 
     companion object {
         const val CHANNEL_ID = "morning_check_in"
         const val NOTIFICATION_ID = 1002
         private const val REQUEST_CODE = 1
+
+        fun pendingIntent(context: Context): PendingIntent = PendingIntent.getBroadcast(
+            context,
+            0,
+            Intent(context, MorningCheckInReceiver::class.java),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
 
         fun ensureNotificationChannel(context: Context) {
             val channel = NotificationChannel(
