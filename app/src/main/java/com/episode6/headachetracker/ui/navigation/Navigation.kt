@@ -26,12 +26,12 @@ import com.episode6.headachetracker.R
 import com.episode6.headachetracker.appGraph
 import com.episode6.headachetracker.ui.calendar.CalendarScreen
 import com.episode6.headachetracker.ui.calendar.CalendarViewModel
-import com.episode6.headachetracker.ui.calendar.DataTransferMessage
 import com.episode6.headachetracker.ui.calendar.FullYearScreen
 import com.episode6.headachetracker.ui.calendar.FullYearViewModel
 import com.episode6.headachetracker.ui.edit.EditScreen
 import com.episode6.headachetracker.ui.licenses.LicensesScreen
 import com.episode6.headachetracker.ui.edit.EditViewModel
+import com.episode6.headachetracker.ui.settings.DataTransferMessage
 import com.episode6.headachetracker.ui.settings.SettingsScreen
 import com.episode6.headachetracker.ui.settings.SettingsViewModel
 import java.time.LocalDate
@@ -56,12 +56,62 @@ fun HeadacheTrackerNavigation(initialEditDate: String? = null) {
         }
         composable<Route.Settings> {
             val context = LocalContext.current
+            val resources = LocalResources.current
             val viewModelFactory = remember { context.appGraph.viewModelFactory }
             val viewModel: SettingsViewModel = viewModel(factory = viewModelFactory)
             val state by viewModel.state.collectAsStateWithLifecycle()
+            val snackbarHostState = remember { SnackbarHostState() }
+
+            val exportLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.CreateDocument("application/json"),
+            ) { uri ->
+                if (uri != null) {
+                    viewModel.exportTo(uri)
+                }
+            }
+
+            val importLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.OpenDocument(),
+            ) { uri ->
+                if (uri != null) {
+                    viewModel.importFrom(uri)
+                }
+            }
+
+            val autoExportLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.CreateDocument("application/json"),
+            ) { uri ->
+                if (uri != null) {
+                    viewModel.onAutoExportFileSelected(uri)
+                }
+            }
+
+            LaunchedEffect(viewModel) {
+                viewModel.triggerAutoExportFilePicker.collectLatest {
+                    autoExportLauncher.launch(resources.getString(R.string.export_filename))
+                }
+            }
+
+            LaunchedEffect(viewModel) {
+                viewModel.dataTransferMessages.collectLatest { message ->
+                    val text = when (message) {
+                        is DataTransferMessage.ExportSuccess -> resources.getString(
+                            R.string.export_success,
+                            message.entryCount,
+                        )
+                        is DataTransferMessage.ImportSuccess -> resources.getString(
+                            R.string.import_success,
+                            message.entryCount,
+                        )
+                        is DataTransferMessage.Error -> message.message
+                    }
+                    snackbarHostState.showSnackbar(text)
+                }
+            }
 
             SettingsScreen(
                 state = state,
+                snackbarHostState = snackbarHostState,
                 onReminderMinutesChanged = { viewModel.onReminderMinutesChanged(it) },
                 onMorningCheckInToggled = { viewModel.onMorningCheckInToggled(it) },
                 onMorningCheckInTimeChanged = { hour, minute ->
@@ -72,6 +122,15 @@ fun HeadacheTrackerNavigation(initialEditDate: String? = null) {
                         Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
                             .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
                     )
+                },
+                onExportClick = {
+                    exportLauncher.launch(resources.getString(R.string.export_filename))
+                },
+                onImportClick = {
+                    importLauncher.launch(arrayOf("application/json", "text/plain"))
+                },
+                onAutoExportToggled = { enabled ->
+                    viewModel.onAutoExportToggled(enabled)
                 },
                 onLicensesClick = { navController.navigate(Route.Licenses) },
                 onBack = { navController.popBackStack() },
@@ -133,54 +192,6 @@ fun AdaptiveCalendarScreen(
             AnimatedPane {
                 val viewModel: CalendarViewModel = viewModel(factory = viewModelFactory)
                 val state by viewModel.state.collectAsState()
-                val snackbarHostState = remember { SnackbarHostState() }
-
-                val exportLauncher = rememberLauncherForActivityResult(
-                    contract = ActivityResultContracts.CreateDocument("application/json"),
-                ) { uri ->
-                    if (uri != null) {
-                        viewModel.exportTo(uri)
-                    }
-                }
-
-                val importLauncher = rememberLauncherForActivityResult(
-                    contract = ActivityResultContracts.OpenDocument(),
-                ) { uri ->
-                    if (uri != null) {
-                        viewModel.importFrom(uri)
-                    }
-                }
-
-                val autoExportLauncher = rememberLauncherForActivityResult(
-                    contract = ActivityResultContracts.CreateDocument("application/json"),
-                ) { uri ->
-                    if (uri != null) {
-                        viewModel.onAutoExportFileSelected(uri)
-                    }
-                }
-
-                LaunchedEffect(viewModel) {
-                    viewModel.triggerAutoExportFilePicker.collectLatest {
-                        autoExportLauncher.launch(resources.getString(R.string.export_filename))
-                    }
-                }
-
-                LaunchedEffect(viewModel) {
-                    viewModel.dataTransferMessages.collectLatest { message ->
-                        val text = when (message) {
-                            is DataTransferMessage.ExportSuccess -> resources.getString(
-                                R.string.export_success,
-                                message.entryCount,
-                            )
-                            is DataTransferMessage.ImportSuccess -> resources.getString(
-                                R.string.import_success,
-                                message.entryCount,
-                            )
-                            is DataTransferMessage.Error -> message.message
-                        }
-                        snackbarHostState.showSnackbar(text)
-                    }
-                }
 
                 CalendarScreen(
                     state = state,
@@ -189,12 +200,6 @@ fun AdaptiveCalendarScreen(
                     onDayClick = { date ->
                         selectedDate = date.toString()
                     },
-                    onExportClick = {
-                        exportLauncher.launch(resources.getString(R.string.export_filename))
-                    },
-                    onImportClick = {
-                        importLauncher.launch(arrayOf("application/json", "text/plain"))
-                    },
                     onFullYearClick = {
                         onNavigateToFullYear(state.selectedMonth.year)
                     },
@@ -202,10 +207,6 @@ fun AdaptiveCalendarScreen(
                     onTodayEntryClick = {
                         selectedDate = LocalDate.now().toString()
                     },
-                    onAutoExportToggled = { enabled ->
-                        viewModel.onAutoExportToggled(enabled)
-                    },
-                    snackbarHostState = snackbarHostState,
                 )
             }
         },

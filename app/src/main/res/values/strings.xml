@@ -28,6 +28,14 @@
     <string name="second_pill_channel_name">Pill reminders</string>
     <string name="second_pill_notification_title">Time for your 2nd pill</string>
     <string name="second_pill_notification_text">You logged 1 pill — take the second one if you still need it.</string>
-    <string name="last_auto_export">Last Auto-Export: %1$s</string>
+    <string name="last_auto_export">Last auto-export: %1$s</string>
     <string name="never">Never</string>
+    <string name="settings_section_reminders">Reminders</string>
+    <string name="settings_section_data">Backup &amp; data</string>
+    <string name="settings_section_about">About</string>
+    <string name="notification_settings_supporting">Manage this app\'s notifications in system settings</string>
+    <string name="export_data_supporting">Save all entries to a JSON file</string>
+    <string name="import_data_supporting">Restore entries from a backup file</string>
+    <string name="auto_export_supporting">Keep a backup file updated automatically as entries change</string>
+    <string name="calendar_menu">More options</string>
 </resources>

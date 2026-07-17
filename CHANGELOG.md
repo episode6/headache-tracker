@@ -2,6 +2,13 @@
 
 ### v1.0.10 - Unreleased
 
+- Moved Export data, Import data, and Auto-Export from the calendar's 3-dots menu
+  to the Settings screen, which is now organized into grouped sections (Reminders,
+  Backup & data, About) with a refreshed Material 3 look: section cards, per-row
+  icons, and inline supporting text (including the last auto-export time under the
+  Auto-Export toggle). Export/import progress and result snackbars now show on the
+  Settings screen. The calendar's 3-dots menu is down to Full year view and
+  Settings.
 - Added a Third-party license notices screen (Settings → Third-party license
   notices). The notices live in `THIRD_PARTY_LICENSES.md` at the repo root and are
   embedded into the app at build time, so the in-app screen always matches the

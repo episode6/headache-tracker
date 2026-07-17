@@ -59,18 +59,13 @@ fun CalendarScreen(
     onMonthChanged: (YearMonth) -> Unit,
     onYearSelected: (Int) -> Unit,
     onDayClick: (LocalDate) -> Unit,
-    onExportClick: () -> Unit,
-    onImportClick: () -> Unit,
     onFullYearClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onTodayEntryClick: () -> Unit,
-    onAutoExportToggled: (Boolean) -> Unit,
-    snackbarHostState: SnackbarHostState,
 ) {
     val initialMonth = remember { YearMonth.now() }
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = {
@@ -101,15 +96,9 @@ fun CalendarScreen(
                             onMonthChanged(state.selectedMonth.withMonth(month.value))
                         }
                     )
-                    DataTransferMenu(
-                        enabled = !state.isTransferInProgress,
-                        autoExportEnabled = state.autoExportEnabled,
-                        lastAutoExportStatus = state.lastAutoExportStatus,
-                        onExportClick = onExportClick,
-                        onImportClick = onImportClick,
+                    CalendarOverflowMenu(
                         onFullYearClick = onFullYearClick,
                         onSettingsClick = onSettingsClick,
-                        onAutoExportToggled = onAutoExportToggled,
                     )
                 }
             )
@@ -129,36 +118,28 @@ fun CalendarScreen(
             )
         },
     ) { padding ->
-        Box(modifier = Modifier.fillMaxSize()) {
-            BoxWithConstraints(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-            ) {
-                val useVerticalMonthScroll = maxHeight > maxWidth && maxWidth < CompactWidthBreakpoint
+        BoxWithConstraints(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding),
+        ) {
+            val useVerticalMonthScroll = maxHeight > maxWidth && maxWidth < CompactWidthBreakpoint
 
-                if (useVerticalMonthScroll) {
-                    CalendarVerticalMonthList(
-                        initialMonth = initialMonth,
-                        selectedMonth = state.selectedMonth,
-                        entries = state.entries,
-                        onMonthChanged = onMonthChanged,
-                        onDayClick = onDayClick,
-                    )
-                } else {
-                    CalendarHorizontalPager(
-                        initialMonth = initialMonth,
-                        selectedMonth = state.selectedMonth,
-                        entries = state.entries,
-                        onMonthChanged = onMonthChanged,
-                        onDayClick = onDayClick,
-                    )
-                }
-            }
-
-            if (state.isTransferInProgress) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center),
+            if (useVerticalMonthScroll) {
+                CalendarVerticalMonthList(
+                    initialMonth = initialMonth,
+                    selectedMonth = state.selectedMonth,
+                    entries = state.entries,
+                    onMonthChanged = onMonthChanged,
+                    onDayClick = onDayClick,
+                )
+            } else {
+                CalendarHorizontalPager(
+                    initialMonth = initialMonth,
+                    selectedMonth = state.selectedMonth,
+                    entries = state.entries,
+                    onMonthChanged = onMonthChanged,
+                    onDayClick = onDayClick,
                 )
             }
         }
@@ -273,24 +254,15 @@ private fun CalendarVerticalMonthList(
 }
 
 @Composable
-fun DataTransferMenu(
-    enabled: Boolean,
-    autoExportEnabled: Boolean,
-    lastAutoExportStatus: String?,
-    onExportClick: () -> Unit,
-    onImportClick: () -> Unit,
+fun CalendarOverflowMenu(
     onFullYearClick: () -> Unit,
     onSettingsClick: () -> Unit,
-    onAutoExportToggled: (Boolean) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     Box {
-        IconButton(
-            onClick = { expanded = true },
-            enabled = enabled,
-        ) {
-            Icon(Icons.Rounded.MoreVert, contentDescription = stringResource(R.string.export_data))
+        IconButton(onClick = { expanded = true }) {
+            Icon(Icons.Rounded.MoreVert, contentDescription = stringResource(R.string.calendar_menu))
         }
 
         DropdownMenu(
@@ -305,58 +277,11 @@ fun DataTransferMenu(
                 },
             )
             DropdownMenuItem(
-                text = { Text(stringResource(R.string.export_data)) },
-                onClick = {
-                    expanded = false
-                    onExportClick()
-                },
-            )
-            DropdownMenuItem(
-                text = { Text(stringResource(R.string.import_data)) },
-                onClick = {
-                    expanded = false
-                    onImportClick()
-                },
-            )
-            DropdownMenuItem(
                 text = { Text(stringResource(R.string.settings)) },
                 onClick = {
                     expanded = false
                     onSettingsClick()
                 },
-            )
-            HorizontalDivider()
-            DropdownMenuItem(
-                text = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Checkbox(
-                            checked = autoExportEnabled,
-                            onCheckedChange = null // Handled by onClick
-                        )
-                        Text(stringResource(R.string.auto_export))
-                    }
-                },
-                onClick = {
-                    onAutoExportToggled(!autoExportEnabled)
-                    expanded = false
-                }
-            )
-
-            val lastExportStr = lastAutoExportStatus ?: stringResource(R.string.never)
-
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        text = stringResource(R.string.last_auto_export, lastExportStr),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                },
-                onClick = {},
-                enabled = false
             )
         }
     }
@@ -595,13 +520,9 @@ fun CalendarScreenPreview() {
             onMonthChanged = {},
             onYearSelected = {},
             onDayClick = {},
-            onExportClick = {},
-            onImportClick = {},
             onFullYearClick = {},
             onSettingsClick = {},
             onTodayEntryClick = {},
-            onAutoExportToggled = {},
-            snackbarHostState = remember { SnackbarHostState() },
         )
     }
 }
