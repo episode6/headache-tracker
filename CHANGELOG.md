@@ -13,6 +13,9 @@
   marker still takes precedence). The severity cells in the Notes summary list
   carry the same border so the two screens visually match.
 
+- While the Notes summary is visible side-by-side with the calendar, tapping a
+  row in the summary smooth-scrolls the calendar to reveal that entry's month.
+
 - Internal: replaced the hand-written `AppViewModelFactory` with Metro's
   `metrox-viewmodel` / `metrox-viewmodel-compose` artifacts. ViewModels are now
   contributed to the DI graph via `@ViewModelKey` / `ManualViewModelAssistedFactory`

@@ -65,6 +65,8 @@ fun CalendarScreen(
     onSettingsClick: () -> Unit,
     onTodayEntryClick: () -> Unit,
     highlightNotedDays: Boolean = false,
+    smoothScrollToMonth: YearMonth? = null,
+    onSmoothScrollHandled: () -> Unit = {},
 ) {
     val initialMonth = remember { YearMonth.now() }
 
@@ -137,6 +139,8 @@ fun CalendarScreen(
                     onMonthChanged = onMonthChanged,
                     onDayClick = onDayClick,
                     highlightNotedDays = highlightNotedDays,
+                    smoothScrollToMonth = smoothScrollToMonth,
+                    onSmoothScrollHandled = onSmoothScrollHandled,
                 )
             } else {
                 CalendarHorizontalPager(
@@ -146,6 +150,8 @@ fun CalendarScreen(
                     onMonthChanged = onMonthChanged,
                     onDayClick = onDayClick,
                     highlightNotedDays = highlightNotedDays,
+                    smoothScrollToMonth = smoothScrollToMonth,
+                    onSmoothScrollHandled = onSmoothScrollHandled,
                 )
             }
         }
@@ -160,6 +166,8 @@ private fun CalendarHorizontalPager(
     onMonthChanged: (YearMonth) -> Unit,
     onDayClick: (LocalDate) -> Unit,
     highlightNotedDays: Boolean,
+    smoothScrollToMonth: YearMonth?,
+    onSmoothScrollHandled: () -> Unit,
 ) {
     val pagerState = rememberPagerState(
         initialPage = monthIndexFor(initialMonth, selectedMonth),
@@ -170,6 +178,15 @@ private fun CalendarHorizontalPager(
         val targetPage = monthIndexFor(initialMonth, selectedMonth)
         if (pagerState.currentPage != targetPage) {
             pagerState.scrollToPage(targetPage)
+        }
+    }
+
+    LaunchedEffect(smoothScrollToMonth) {
+        val target = smoothScrollToMonth ?: return@LaunchedEffect
+        try {
+            pagerState.animateScrollToPage(monthIndexFor(initialMonth, target))
+        } finally {
+            onSmoothScrollHandled()
         }
     }
 
@@ -207,6 +224,8 @@ private fun CalendarVerticalMonthList(
     onMonthChanged: (YearMonth) -> Unit,
     onDayClick: (LocalDate) -> Unit,
     highlightNotedDays: Boolean,
+    smoothScrollToMonth: YearMonth?,
+    onSmoothScrollHandled: () -> Unit,
 ) {
     val listState = rememberLazyListState(
         initialFirstVisibleItemIndex = monthIndexFor(initialMonth, selectedMonth),
@@ -216,6 +235,15 @@ private fun CalendarVerticalMonthList(
         val targetIndex = monthIndexFor(initialMonth, selectedMonth)
         if (listState.firstVisibleItemIndex != targetIndex) {
             listState.scrollToItem(targetIndex)
+        }
+    }
+
+    LaunchedEffect(smoothScrollToMonth) {
+        val target = smoothScrollToMonth ?: return@LaunchedEffect
+        try {
+            listState.animateScrollToItem(monthIndexFor(initialMonth, target))
+        } finally {
+            onSmoothScrollHandled()
         }
     }
 

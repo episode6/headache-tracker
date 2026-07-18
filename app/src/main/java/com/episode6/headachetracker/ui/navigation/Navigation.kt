@@ -35,6 +35,7 @@ import com.episode6.headachetracker.ui.settings.SettingsViewModel
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import java.time.LocalDate
+import java.time.YearMonth
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
@@ -178,6 +179,9 @@ fun AdaptiveCalendarScreen(
     if (detailOpen) {
         lastDetailWasNotes = showNotesSummary
     }
+    // Set when a notes-summary row is tapped side-by-side; consumed by the calendar
+    // once it has animated to that month.
+    var revealMonth by remember { mutableStateOf<YearMonth?>(null) }
 
     val adaptiveInfo = currentWindowAdaptiveInfo()
     val directive = calculatePaneScaffoldDirective(adaptiveInfo)
@@ -220,6 +224,8 @@ fun AdaptiveCalendarScreen(
                         selectedDate = LocalDate.now().toString()
                     },
                     highlightNotedDays = isSideBySide && showNotesSummary,
+                    smoothScrollToMonth = revealMonth,
+                    onSmoothScrollHandled = { revealMonth = null },
                 )
             }
         },
@@ -232,6 +238,9 @@ fun AdaptiveCalendarScreen(
                     NotesSummaryScreen(
                         state = state,
                         onBack = { showNotesSummary = false },
+                        onEntryClick = if (isSideBySide) {
+                            { date -> revealMonth = YearMonth.from(date) }
+                        } else null,
                     )
                 } else {
                     val dateKey = lastEditDate
