@@ -60,6 +60,7 @@ fun CalendarScreen(
     onYearSelected: (Int) -> Unit,
     onDayClick: (LocalDate) -> Unit,
     onFullYearClick: () -> Unit,
+    onNotesSummaryClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onTodayEntryClick: () -> Unit,
 ) {
@@ -98,6 +99,7 @@ fun CalendarScreen(
                     )
                     CalendarOverflowMenu(
                         onFullYearClick = onFullYearClick,
+                        onNotesSummaryClick = onNotesSummaryClick,
                         onSettingsClick = onSettingsClick,
                     )
                 }
@@ -256,6 +258,7 @@ private fun CalendarVerticalMonthList(
 @Composable
 fun CalendarOverflowMenu(
     onFullYearClick: () -> Unit,
+    onNotesSummaryClick: () -> Unit,
     onSettingsClick: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -274,6 +277,13 @@ fun CalendarOverflowMenu(
                 onClick = {
                     expanded = false
                     onFullYearClick()
+                },
+            )
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.notes_summary_title)) },
+                onClick = {
+                    expanded = false
+                    onNotesSummaryClick()
                 },
             )
             DropdownMenuItem(
@@ -521,6 +531,7 @@ fun CalendarScreenPreview() {
             onYearSelected = {},
             onDayClick = {},
             onFullYearClick = {},
+            onNotesSummaryClick = {},
             onSettingsClick = {},
             onTodayEntryClick = {},
         )

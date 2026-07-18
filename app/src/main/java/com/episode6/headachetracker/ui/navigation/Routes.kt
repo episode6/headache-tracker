@@ -14,6 +14,9 @@ sealed interface Route {
     data class FullYear(val year: Int) : Route
 
     @Serializable
+    data object NotesSummary : Route
+
+    @Serializable
     data object Settings : Route
 
     @Serializable

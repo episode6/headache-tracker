@@ -6,6 +6,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import com.episode6.headachetracker.ui.calendar.CalendarViewModel
 import com.episode6.headachetracker.ui.calendar.FullYearViewModel
 import com.episode6.headachetracker.ui.edit.EditViewModel
+import com.episode6.headachetracker.ui.notes.NotesSummaryViewModel
 import com.episode6.headachetracker.ui.settings.SettingsViewModel
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
@@ -21,6 +22,7 @@ class AppViewModelFactory(
     private val editViewModelFactory: ()->EditViewModel.Factory,
     private val fullYearViewModelFactory: ()->FullYearViewModel.Factory,
     private val settingsViewModelProvider: ()->SettingsViewModel,
+    private val notesSummaryViewModelProvider: ()->NotesSummaryViewModel,
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -35,6 +37,8 @@ class AppViewModelFactory(
             }
             modelClass.isAssignableFrom(SettingsViewModel::class.java) ->
                 settingsViewModelProvider() as T
+            modelClass.isAssignableFrom(NotesSummaryViewModel::class.java) ->
+                notesSummaryViewModelProvider() as T
             modelClass.isAssignableFrom(FullYearViewModel::class.java) -> {
                 val year = extras[FullYearYearKey]
                     ?: throw IllegalArgumentException("FullYearViewModel requires a year in CreationExtras")

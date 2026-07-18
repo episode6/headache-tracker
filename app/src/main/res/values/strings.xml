@@ -37,4 +37,8 @@
     <string name="import_data_supporting">Restore entries from a backup file</string>
     <string name="auto_export_supporting">Keep a backup file updated automatically as entries change</string>
     <string name="calendar_menu">More options</string>
+    <string name="notes_summary_title">Notes summary</string>
+    <string name="notes_summary_back">Back to calendar</string>
+    <string name="notes_summary_empty">No notes yet</string>
+    <string name="notes_summary_empty_supporting">Notes you add when logging a day will show up here.</string>
 </resources>
