@@ -172,6 +172,10 @@ fun AdaptiveCalendarScreen(
     val resources = LocalResources.current
     val viewModelFactory = remember { context.appGraph.viewModelFactory }
     var selectedDate by rememberSaveable { mutableStateOf(initialSelectedDate) }
+    // Retains the last selected date so the edit pane keeps its content while animating out
+    // (selectedDate is nulled immediately on back/save, before the exit transition finishes).
+    var lastEditDate by rememberSaveable { mutableStateOf(initialSelectedDate) }
+    selectedDate?.let { lastEditDate = it }
 
     val adaptiveInfo = currentWindowAdaptiveInfo()
     val directive = calculatePaneScaffoldDirective(adaptiveInfo)
@@ -212,8 +216,8 @@ fun AdaptiveCalendarScreen(
         },
         detailPane = {
             AnimatedPane {
-                if (selectedDate != null) {
-                    val dateKey = selectedDate!!
+                val dateKey = lastEditDate
+                if (dateKey != null) {
                     val viewModel: EditViewModel = viewModel(
                         key = dateKey,
                         factory = viewModelFactory,
