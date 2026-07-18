@@ -173,19 +173,24 @@ private fun CalendarHorizontalPager(
         initialPage = monthIndexFor(initialMonth, selectedMonth),
         pageCount = { PAGER_PAGE_COUNT },
     )
+    // While the reveal animation runs, month-sync callbacks fire for every month it
+    // passes; skip the instant snap-back or it cancels the animation partway through.
+    var revealScrollInProgress by remember { mutableStateOf(false) }
 
     LaunchedEffect(selectedMonth) {
         val targetPage = monthIndexFor(initialMonth, selectedMonth)
-        if (pagerState.currentPage != targetPage) {
+        if (!revealScrollInProgress && pagerState.currentPage != targetPage) {
             pagerState.scrollToPage(targetPage)
         }
     }
 
     LaunchedEffect(smoothScrollToMonth) {
         val target = smoothScrollToMonth ?: return@LaunchedEffect
+        revealScrollInProgress = true
         try {
             pagerState.animateScrollToPage(monthIndexFor(initialMonth, target))
         } finally {
+            revealScrollInProgress = false
             onSmoothScrollHandled()
         }
     }
@@ -230,19 +235,24 @@ private fun CalendarVerticalMonthList(
     val listState = rememberLazyListState(
         initialFirstVisibleItemIndex = monthIndexFor(initialMonth, selectedMonth),
     )
+    // While the reveal animation runs, month-sync callbacks fire for every month it
+    // passes; skip the instant snap-back or it cancels the animation partway through.
+    var revealScrollInProgress by remember { mutableStateOf(false) }
 
     LaunchedEffect(selectedMonth) {
         val targetIndex = monthIndexFor(initialMonth, selectedMonth)
-        if (listState.firstVisibleItemIndex != targetIndex) {
+        if (!revealScrollInProgress && listState.firstVisibleItemIndex != targetIndex) {
             listState.scrollToItem(targetIndex)
         }
     }
 
     LaunchedEffect(smoothScrollToMonth) {
         val target = smoothScrollToMonth ?: return@LaunchedEffect
+        revealScrollInProgress = true
         try {
             listState.animateScrollToItem(monthIndexFor(initialMonth, target))
         } finally {
+            revealScrollInProgress = false
             onSmoothScrollHandled()
         }
     }
