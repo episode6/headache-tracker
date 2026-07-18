@@ -143,7 +143,6 @@ fun SettingsScreen(
                         onValueChange = onReminderMinutesChanged,
                         enabled = state.isLoaded,
                         label = { Text(stringResource(R.string.second_pill_reminder_minutes_label)) },
-                        supportingText = { Text(stringResource(R.string.second_pill_reminder_minutes_supporting)) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
                         modifier = Modifier.weight(1f),
