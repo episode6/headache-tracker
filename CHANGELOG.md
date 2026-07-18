@@ -9,11 +9,13 @@
 - Removed the unused `INTERNET` permission (leftover template boilerplate from
   the initial import). The app is fully offline by spec and must never request
   it.
-- Internal: new build checks (a `release-verification` convention plugin in
-  `buildSrc/`, wired into `check` so they run in CI) pin the release APK's exact
-  dependency set to `app/expected-dependencies.txt` and its merged-manifest
-  permissions to `app/expected-permissions.txt`, so no library or manifest change
-  can introduce network access (or any new dependency/permission) unnoticed.
+- Internal: new build checks (a `release-verification` convention plugin in the
+  `build-logic/` included build, wired into `check` so they run in CI) pin the
+  release APK's exact dependency set to `app/expected-dependencies.txt` and its
+  merged-manifest permissions to `app/expected-permissions.txt`, so no library or
+  manifest change can introduce network access (or any new dependency/permission)
+  unnoticed. (The plugin lives in an included build rather than buildSrc because
+  buildSrc's parent classloader breaks Metro codegen — see AGENTS.md.)
 - Debug builds now use a yellow launcher-icon background (overriding both the purple
   release background and the dark-charcoal snapshot background) so debug installs are
   distinguishable at a glance.

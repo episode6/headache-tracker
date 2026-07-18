@@ -1,11 +1,10 @@
 plugins {
-    // versionless: AGP comes from the buildSrc classpath (see buildSrc/build.gradle.kts)
-    id("com.android.application")
+    alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.jetbrains.kotlin.plugin.serialization)
     alias(libs.plugins.metro)
-    // buildSrc convention plugin: pins release dependencies to expected-dependencies.txt
+    // build-logic convention plugin: pins release dependencies to expected-dependencies.txt
     // and merged-manifest permissions to expected-permissions.txt (both verified by check)
     id("release-verification")
 }

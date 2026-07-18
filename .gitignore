@@ -14,4 +14,4 @@
 .cxx
 local.properties
 .claude/worktrees/
-buildSrc/build/
+build-logic/build/
