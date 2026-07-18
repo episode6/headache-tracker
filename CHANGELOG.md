@@ -2,6 +2,9 @@
 
 ### v1.0.10 - Unreleased
 
+- Fixed the edit-day pane blanking out before its exit transition finished when
+  backing out (or saving) on phones — the pane now keeps its content while it
+  animates away.
 - Moved Export data, Import data, and Auto-Export from the calendar's 3-dots menu
   to the Settings screen, which is now organized into grouped sections (Reminders,
   Backup & data, About) with a refreshed Material 3 look: section cards, per-row
