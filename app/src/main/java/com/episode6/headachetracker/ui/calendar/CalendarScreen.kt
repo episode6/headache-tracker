@@ -67,6 +67,11 @@ private fun monthAtIndex(initialMonth: YearMonth, index: Int): YearMonth {
     return initialMonth.plusMonths((index - PAGER_CENTER_PAGE).toLong())
 }
 
+// One notes-summary reveal tap. The id makes every tap a distinct request so
+// re-tapping a row (even the same date) interrupts any in-flight reveal
+// animations and starts over.
+data class RevealRequest(val date: LocalDate, val id: Long)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalendarScreen(
@@ -79,17 +84,21 @@ fun CalendarScreen(
     onSettingsClick: () -> Unit,
     onTodayEntryClick: () -> Unit,
     highlightNotedDays: Boolean = false,
-    smoothScrollToDate: LocalDate? = null,
-    onSmoothScrollHandled: () -> Unit = {},
+    revealRequest: RevealRequest? = null,
+    onRevealScrollHandled: (Long) -> Unit = {},
 ) {
     val initialMonth = remember { YearMonth.now() }
-    // The day cell that should play the emphasis animation. Set as soon as a reveal
-    // request arrives — the cell starts animating the moment it's composed, so the
-    // emphasis is already running as the scroll brings it into view. Cleared when
-    // the animation completes.
-    var emphasisDate by remember { mutableStateOf<LocalDate?>(null) }
-    LaunchedEffect(smoothScrollToDate) {
-        smoothScrollToDate?.let { emphasisDate = it }
+    // The reveal request whose day cell should play the emphasis animation. Set as
+    // soon as a request arrives — the cell starts animating the moment it's composed,
+    // so the emphasis is already running as the scroll brings it into view. Cleared
+    // when the animation completes; the id guard keeps a cancelled request's cleanup
+    // from clearing a newer request that has already replaced it.
+    var emphasisRequest by remember { mutableStateOf<RevealRequest?>(null) }
+    LaunchedEffect(revealRequest) {
+        revealRequest?.let { emphasisRequest = it }
+    }
+    val onEmphasisFinished: (Long) -> Unit = { id ->
+        if (emphasisRequest?.id == id) emphasisRequest = null
     }
 
     Scaffold(
@@ -161,10 +170,10 @@ fun CalendarScreen(
                     onMonthChanged = onMonthChanged,
                     onDayClick = onDayClick,
                     highlightNotedDays = highlightNotedDays,
-                    smoothScrollToDate = smoothScrollToDate,
-                    onSmoothScrollHandled = onSmoothScrollHandled,
-                    emphasisDate = emphasisDate,
-                    onEmphasisFinished = { emphasisDate = null },
+                    revealRequest = revealRequest,
+                    onRevealScrollHandled = onRevealScrollHandled,
+                    emphasisRequest = emphasisRequest,
+                    onEmphasisFinished = onEmphasisFinished,
                 )
             } else {
                 CalendarHorizontalPager(
@@ -174,10 +183,10 @@ fun CalendarScreen(
                     onMonthChanged = onMonthChanged,
                     onDayClick = onDayClick,
                     highlightNotedDays = highlightNotedDays,
-                    smoothScrollToDate = smoothScrollToDate,
-                    onSmoothScrollHandled = onSmoothScrollHandled,
-                    emphasisDate = emphasisDate,
-                    onEmphasisFinished = { emphasisDate = null },
+                    revealRequest = revealRequest,
+                    onRevealScrollHandled = onRevealScrollHandled,
+                    emphasisRequest = emphasisRequest,
+                    onEmphasisFinished = onEmphasisFinished,
                 )
             }
         }
@@ -192,10 +201,10 @@ private fun CalendarHorizontalPager(
     onMonthChanged: (YearMonth) -> Unit,
     onDayClick: (LocalDate) -> Unit,
     highlightNotedDays: Boolean,
-    smoothScrollToDate: LocalDate?,
-    onSmoothScrollHandled: () -> Unit,
-    emphasisDate: LocalDate?,
-    onEmphasisFinished: () -> Unit,
+    revealRequest: RevealRequest?,
+    onRevealScrollHandled: (Long) -> Unit,
+    emphasisRequest: RevealRequest?,
+    onEmphasisFinished: (Long) -> Unit,
 ) {
     val pagerState = rememberPagerState(
         initialPage = monthIndexFor(initialMonth, selectedMonth),
@@ -212,14 +221,19 @@ private fun CalendarHorizontalPager(
         }
     }
 
-    LaunchedEffect(smoothScrollToDate) {
-        val target = smoothScrollToDate ?: return@LaunchedEffect
+    // Keyed on the request id: a new tap cancels the in-flight scroll and starts
+    // toward the new target. The handled callback carries the id so a cancelled
+    // request's cleanup can't clear the newer request that interrupted it.
+    LaunchedEffect(revealRequest?.id) {
+        val request = revealRequest ?: return@LaunchedEffect
         revealScrollInProgress = true
         try {
-            pagerState.animateScrollToPage(monthIndexFor(initialMonth, YearMonth.from(target)))
+            pagerState.animateScrollToPage(
+                monthIndexFor(initialMonth, YearMonth.from(request.date))
+            )
         } finally {
             revealScrollInProgress = false
-            onSmoothScrollHandled()
+            onRevealScrollHandled(request.id)
         }
     }
 
@@ -244,7 +258,7 @@ private fun CalendarHorizontalPager(
                 entries = entries,
                 onDayClick = onDayClick,
                 highlightNotedDays = highlightNotedDays,
-                emphasisDate = emphasisDate,
+                emphasisRequest = emphasisRequest,
                 onEmphasisFinished = onEmphasisFinished,
             )
         }
@@ -259,10 +273,10 @@ private fun CalendarVerticalMonthList(
     onMonthChanged: (YearMonth) -> Unit,
     onDayClick: (LocalDate) -> Unit,
     highlightNotedDays: Boolean,
-    smoothScrollToDate: LocalDate?,
-    onSmoothScrollHandled: () -> Unit,
-    emphasisDate: LocalDate?,
-    onEmphasisFinished: () -> Unit,
+    revealRequest: RevealRequest?,
+    onRevealScrollHandled: (Long) -> Unit,
+    emphasisRequest: RevealRequest?,
+    onEmphasisFinished: (Long) -> Unit,
 ) {
     val listState = rememberLazyListState(
         initialFirstVisibleItemIndex = monthIndexFor(initialMonth, selectedMonth),
@@ -278,14 +292,17 @@ private fun CalendarVerticalMonthList(
         }
     }
 
-    LaunchedEffect(smoothScrollToDate) {
-        val target = smoothScrollToDate ?: return@LaunchedEffect
+    // Keyed on the request id: a new tap cancels the in-flight scroll and starts
+    // toward the new target. The handled callback carries the id so a cancelled
+    // request's cleanup can't clear the newer request that interrupted it.
+    LaunchedEffect(revealRequest?.id) {
+        val request = revealRequest ?: return@LaunchedEffect
         revealScrollInProgress = true
         try {
-            listState.animateScrollToItem(monthIndexFor(initialMonth, YearMonth.from(target)))
+            listState.animateScrollToItem(monthIndexFor(initialMonth, YearMonth.from(request.date)))
         } finally {
             revealScrollInProgress = false
-            onSmoothScrollHandled()
+            onRevealScrollHandled(request.id)
         }
     }
 
@@ -323,7 +340,7 @@ private fun CalendarVerticalMonthList(
                     entries = entries,
                     onDayClick = onDayClick,
                     highlightNotedDays = highlightNotedDays,
-                    emphasisDate = emphasisDate,
+                    emphasisRequest = emphasisRequest,
                     onEmphasisFinished = onEmphasisFinished,
                 )
             }
@@ -482,8 +499,8 @@ fun MonthView(
     onDayClick: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
     highlightNotedDays: Boolean = false,
-    emphasisDate: LocalDate? = null,
-    onEmphasisFinished: () -> Unit = {},
+    emphasisRequest: RevealRequest? = null,
+    onEmphasisFinished: (Long) -> Unit = {},
 ) {
     val firstDayOfMonth = month.atDay(1)
     val daysInMonth = month.lengthOfMonth()
@@ -506,6 +523,7 @@ fun MonthView(
         days.chunked(7).forEach { week ->
             // The emphasized cell scales past its bounds; raise its row and cell so
             // it draws over the neighboring cells instead of underneath them.
+            val emphasisDate = emphasisRequest?.date
             val weekHasEmphasis = emphasisDate != null && week.contains(emphasisDate)
             Row(
                 modifier = Modifier
@@ -530,7 +548,7 @@ fun MonthView(
                                 isFuture = isFuture,
                                 hasNotesHighlight = highlightNotedDays &&
                                     !entry?.notes.isNullOrBlank(),
-                                emphasize = date == emphasisDate,
+                                emphasisRequest = emphasisRequest.takeIf { date == emphasisDate },
                                 onEmphasisFinished = onEmphasisFinished,
                             )
                         } else {
@@ -553,8 +571,8 @@ fun DayCell(
     pillsTaken: Int,
     isFuture: Boolean = false,
     hasNotesHighlight: Boolean = false,
-    emphasize: Boolean = false,
-    onEmphasisFinished: () -> Unit = {},
+    emphasisRequest: RevealRequest? = null,
+    onEmphasisFinished: (Long) -> Unit = {},
     onClick: () -> Unit
 ) {
     val backgroundColor = when (intensity) {
@@ -568,11 +586,12 @@ fun DayCell(
 
     // Emphasis animation for a notes-summary reveal: a springy grow/shrink pulse
     // and a diagonal glare sweep (0..1 tracks the band's travel), played together
-    // and repeated twice.
+    // and repeated twice. Keyed on the request id so a new tap on the same date
+    // restarts the animation from the beginning.
     val pulseScale = remember { Animatable(1f) }
     val glareProgress = remember { Animatable(0f) }
-    if (emphasize) {
-        LaunchedEffect(Unit) {
+    if (emphasisRequest != null) {
+        LaunchedEffect(emphasisRequest.id) {
             try {
                 repeat(2) {
                     coroutineScope {
@@ -596,7 +615,7 @@ fun DayCell(
                     pulseScale.snapTo(1f)
                     glareProgress.snapTo(0f)
                 }
-                onEmphasisFinished()
+                onEmphasisFinished(emphasisRequest.id)
             }
         }
     }
@@ -669,7 +688,7 @@ fun DayCell(
             }
         }
 
-        if (emphasize) {
+        if (emphasisRequest != null) {
             Box(
                 modifier = Modifier
                     .matchParentSize()

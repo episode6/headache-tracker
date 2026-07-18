@@ -22,6 +22,11 @@
   diagonal glare sweep that starts as the cell scrolls into view and plays
   twice in a row.
 
+- Tapping a Notes summary row while a previous tap's reveal animation is still
+  running (including a re-tap of the same row) now interrupts the in-flight
+  scroll and day-cell emphasis animation and starts the new reveal immediately,
+  instead of the taps being ignored or the animations clobbering each other.
+
 - Internal: replaced the hand-written `AppViewModelFactory` with Metro's
   `metrox-viewmodel` / `metrox-viewmodel-compose` artifacts. ViewModels are now
   contributed to the DI graph via `@ViewModelKey` / `ManualViewModelAssistedFactory`
