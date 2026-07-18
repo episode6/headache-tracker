@@ -1,5 +1,6 @@
 package com.episode6.headachetracker.ui.notes
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +44,7 @@ import java.time.format.DateTimeFormatter
 fun NotesSummaryScreen(
     state: NotesSummaryState,
     onBack: () -> Unit,
+    onEntryClick: ((LocalDate) -> Unit)? = null,
 ) {
     Scaffold(
         topBar = {
@@ -95,7 +97,7 @@ fun NotesSummaryScreen(
                             if (index < group.entries.lastIndex) {
                                 HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
                             }
-                            NotesSummaryRow(entry = entry)
+                            NotesSummaryRow(entry = entry, onEntryClick = onEntryClick)
                         }
                     }
                     item(key = "year-${group.year}") {
@@ -127,6 +129,7 @@ private fun YearHeader(
 private fun NotesSummaryRow(
     entry: HeadacheEntry,
     modifier: Modifier = Modifier,
+    onEntryClick: ((LocalDate) -> Unit)? = null,
 ) {
     val locale = LocalLocale.current.platformLocale
     val dateFormatter = remember(locale) {
@@ -137,6 +140,11 @@ private fun NotesSummaryRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .then(
+                if (onEntryClick != null) {
+                    Modifier.clickable { onEntryClick(date) }
+                } else Modifier
+            )
             .padding(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
@@ -145,6 +153,7 @@ private fun NotesSummaryRow(
             intensity = entry.intensity,
             pillsTaken = entry.pillsTaken,
             modifier = Modifier.size(40.dp),
+            hasNotesHighlight = true,
         )
         Column(modifier = Modifier.weight(1f)) {
             Text(

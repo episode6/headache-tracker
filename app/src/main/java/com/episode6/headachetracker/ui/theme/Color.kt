@@ -62,3 +62,10 @@ val Intensity3 = Color(0xFFD32F2F) // Red
 // Pill indicator dots are white with this dark navy ring so they stand out
 // against every intensity background
 val PillDotRing = Color(0xFF0A1F44)
+
+// Border drawn around calendar days with notes while the notes summary pane is
+// open side-by-side. Navy (same as PillDotRing) reads against every intensity color
+// on the light background; the dark theme needs a light ring instead, since navy
+// vanishes against the near-black background.
+val NoteHighlightBorderLight = Color(0xFF0A1F44)
+val NoteHighlightBorderDark = Color(0xFFFFFFFF)
