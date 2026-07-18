@@ -7,7 +7,10 @@ import com.episode6.headachetracker.data.AutoExportManager
 import com.episode6.headachetracker.data.BackupResult
 import com.episode6.headachetracker.data.HeadacheBackupManager
 import com.episode6.headachetracker.data.SettingsRepository
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,6 +45,8 @@ sealed interface DataTransferMessage {
 }
 
 @Inject
+@ViewModelKey
+@ContributesIntoMap(AppScope::class)
 class SettingsViewModel(
     private val settingsRepository: SettingsRepository,
     private val backupManager: HeadacheBackupManager,

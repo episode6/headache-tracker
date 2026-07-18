@@ -2,6 +2,12 @@
 
 ### v1.0.10 - Unreleased
 
+- Internal: replaced the hand-written `AppViewModelFactory` with Metro's
+  `metrox-viewmodel` / `metrox-viewmodel-compose` artifacts. ViewModels are now
+  contributed to the DI graph via `@ViewModelKey` / `ManualViewModelAssistedFactory`
+  multibindings and obtained in Compose with `metroViewModel()` /
+  `assistedMetroViewModel()`; no user-facing changes.
+
 - Added a Notes summary screen (calendar 3-dots menu → Notes summary): a vertical
   list of only the days that have notes, segmented by year. Each row shows the
   month + day, a combined severity/pill-count indicator (the same colored square +

@@ -7,8 +7,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import com.episode6.headachetracker.ui.navigation.HeadacheTrackerNavigation
+import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
 import com.episode6.headachetracker.ui.theme.HeadacheTrackerTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -20,9 +22,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         val initialEditDate = intent.getStringExtra(EXTRA_EDIT_DATE)
         setContent {
-            HeadacheTrackerTheme {
-                RequestNotificationPermission()
-                HeadacheTrackerNavigation(initialEditDate = initialEditDate)
+            CompositionLocalProvider(LocalMetroViewModelFactory provides appGraph.metroViewModelFactory) {
+                HeadacheTrackerTheme {
+                    RequestNotificationPermission()
+                    HeadacheTrackerNavigation(initialEditDate = initialEditDate)
+                }
             }
         }
     }

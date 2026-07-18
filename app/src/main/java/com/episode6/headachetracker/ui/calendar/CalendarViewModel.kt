@@ -4,7 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.episode6.headachetracker.data.HeadacheDao
 import com.episode6.headachetracker.model.HeadacheEntry
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -45,6 +48,8 @@ data class CalendarState(
 )
 
 @Inject
+@ViewModelKey
+@ContributesIntoMap(AppScope::class)
 class CalendarViewModel(
     private val dao: HeadacheDao,
 ) : ViewModel() {

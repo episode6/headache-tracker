@@ -68,6 +68,8 @@ androidx-datastore-preferences = { group = "androidx.datastore", name = "datasto
 androidx-test-rules = { group = "androidx.test", name = "rules", version.ref = "core" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 metro-runtime = { group = "dev.zacsweers.metro", name = "runtime", version.ref = "metro" }
+metrox-viewmodel = { group = "dev.zacsweers.metro", name = "metrox-viewmodel", version.ref = "metro" }
+metrox-viewmodel-compose = { group = "dev.zacsweers.metro", name = "metrox-viewmodel-compose", version.ref = "metro" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

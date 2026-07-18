@@ -15,15 +15,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.MutableCreationExtras
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.episode6.headachetracker.di.AppViewModelFactory
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.episode6.headachetracker.R
-import com.episode6.headachetracker.appGraph
 import com.episode6.headachetracker.ui.calendar.CalendarScreen
 import com.episode6.headachetracker.ui.calendar.CalendarViewModel
 import com.episode6.headachetracker.ui.calendar.FullYearScreen
@@ -36,6 +32,8 @@ import com.episode6.headachetracker.ui.notes.NotesSummaryViewModel
 import com.episode6.headachetracker.ui.settings.DataTransferMessage
 import com.episode6.headachetracker.ui.settings.SettingsScreen
 import com.episode6.headachetracker.ui.settings.SettingsViewModel
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 import java.time.LocalDate
 import kotlinx.coroutines.flow.collectLatest
 
@@ -60,9 +58,7 @@ fun HeadacheTrackerNavigation(initialEditDate: String? = null) {
             )
         }
         composable<Route.NotesSummary> {
-            val context = LocalContext.current
-            val viewModelFactory = remember { context.appGraph.viewModelFactory }
-            val viewModel: NotesSummaryViewModel = viewModel(factory = viewModelFactory)
+            val viewModel: NotesSummaryViewModel = metroViewModel()
             val state by viewModel.state.collectAsStateWithLifecycle()
 
             NotesSummaryScreen(
@@ -73,8 +69,7 @@ fun HeadacheTrackerNavigation(initialEditDate: String? = null) {
         composable<Route.Settings> {
             val context = LocalContext.current
             val resources = LocalResources.current
-            val viewModelFactory = remember { context.appGraph.viewModelFactory }
-            val viewModel: SettingsViewModel = viewModel(factory = viewModelFactory)
+            val viewModel: SettingsViewModel = metroViewModel()
             val state by viewModel.state.collectAsStateWithLifecycle()
             val snackbarHostState = remember { SnackbarHostState() }
 
@@ -157,15 +152,10 @@ fun HeadacheTrackerNavigation(initialEditDate: String? = null) {
         }
         composable<Route.FullYear> { backStackEntry ->
             val route = backStackEntry.toRoute<Route.FullYear>()
-            val context = LocalContext.current
-            val viewModelFactory = remember { context.appGraph.viewModelFactory }
-            val viewModel: FullYearViewModel = viewModel(
-                key = route.year.toString(),
-                factory = viewModelFactory,
-                extras = MutableCreationExtras().apply {
-                    set(AppViewModelFactory.FullYearYearKey, route.year)
-                },
-            )
+            val viewModel: FullYearViewModel =
+                assistedMetroViewModel<FullYearViewModel, FullYearViewModel.Factory>(
+                    key = route.year.toString(),
+                ) { create(route.year) }
             val state by viewModel.state.collectAsStateWithLifecycle()
 
             FullYearScreen(
@@ -187,7 +177,6 @@ fun AdaptiveCalendarScreen(
 ) {
     val context = LocalContext.current
     val resources = LocalResources.current
-    val viewModelFactory = remember { context.appGraph.viewModelFactory }
     var selectedDate by rememberSaveable { mutableStateOf(initialSelectedDate) }
     // Retains the last selected date so the edit pane keeps its content while animating out
     // (selectedDate is nulled immediately on back/save, before the exit transition finishes).
@@ -211,7 +200,7 @@ fun AdaptiveCalendarScreen(
         value = scaffoldValue,
         listPane = {
             AnimatedPane {
-                val viewModel: CalendarViewModel = viewModel(factory = viewModelFactory)
+                val viewModel: CalendarViewModel = metroViewModel()
                 val state by viewModel.state.collectAsState()
 
                 CalendarScreen(
@@ -236,13 +225,10 @@ fun AdaptiveCalendarScreen(
             AnimatedPane {
                 val dateKey = lastEditDate
                 if (dateKey != null) {
-                    val viewModel: EditViewModel = viewModel(
-                        key = dateKey,
-                        factory = viewModelFactory,
-                        extras = MutableCreationExtras().apply {
-                            set(AppViewModelFactory.EditDateKey, dateKey)
-                        },
-                    )
+                    val viewModel: EditViewModel =
+                        assistedMetroViewModel<EditViewModel, EditViewModel.Factory>(
+                            key = dateKey,
+                        ) { create(dateKey) }
                     val state by viewModel.state.collectAsState()
                     EditScreen(
                         state = state,
