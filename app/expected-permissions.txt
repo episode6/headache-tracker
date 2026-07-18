@@ -1,0 +1,7 @@
+# Permissions allowed in the merged release manifest (our own plus anything merged
+# in from libraries). Verified by :app:verifyReleasePermissions (runs with `check`).
+# This app is fully offline by spec — INTERNET must never appear here (see AGENTS.md).
+android.permission.POST_NOTIFICATIONS
+android.permission.RECEIVE_BOOT_COMPLETED
+android.permission.SCHEDULE_EXACT_ALARM
+android.permission.USE_EXACT_ALARM

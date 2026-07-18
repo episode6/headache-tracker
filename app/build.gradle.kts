@@ -1,14 +1,13 @@
-import com.android.build.api.artifact.SingleArtifact
-import org.gradle.api.artifacts.component.ModuleComponentIdentifier
-import org.gradle.api.artifacts.result.ResolvedComponentResult
-import org.gradle.api.artifacts.result.ResolvedDependencyResult
-
 plugins {
-    alias(libs.plugins.android.application)
+    // versionless: AGP comes from the buildSrc classpath (see buildSrc/build.gradle.kts)
+    id("com.android.application")
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.jetbrains.kotlin.plugin.serialization)
     alias(libs.plugins.metro)
+    // buildSrc convention plugin: pins release dependencies to expected-dependencies.txt
+    // and merged-manifest permissions to expected-permissions.txt (both verified by check)
+    id("release-verification")
 }
 
 // derived from self.versions.name in the root build script (see the formula there)
@@ -144,138 +143,12 @@ val generateLicenseNotices = tasks.register<GenerateLicenseNoticesTask>("generat
     noticesFile.set(rootProject.layout.projectDirectory.file("THIRD_PARTY_LICENSES.md"))
 }
 
-// The release APK's transitive dependency set is pinned to expected-dependencies.txt
-// (group:artifact, versions live in the catalog) so a new library — direct or
-// transitive — can't ship without a deliberate review: every artifact needs a
-// THIRD_PARTY_LICENSES.md entry, and none may pull network code into an app that
-// must stay fully offline.
-abstract class VerifyAppDependenciesTask : DefaultTask() {
-    @get:Input
-    abstract val actualDependencies: SetProperty<String>
-
-    @get:InputFile
-    abstract val expectedFile: RegularFileProperty
-
-    @TaskAction
-    fun verify() {
-        val expected = expectedFile.get().asFile.readLines()
-            .map { it.trim() }
-            .filter { it.isNotEmpty() && !it.startsWith("#") }
-            .toSortedSet()
-        val actual = actualDependencies.get().toSortedSet()
-        if (expected == actual) return
-        throw GradleException(buildString {
-            appendLine("Release dependencies don't match ${expectedFile.get().asFile.name}.")
-            (actual - expected).forEach { appendLine("  unexpected: $it") }
-            (expected - actual).forEach { appendLine("  missing:    $it") }
-            appendLine("If this change is intentional, run ./gradlew :app:writeExpectedDependencies")
-            appendLine("and update THIRD_PARTY_LICENSES.md to match.")
-        })
-    }
-}
-
-abstract class WriteExpectedAppDependenciesTask : DefaultTask() {
-    @get:Input
-    abstract val actualDependencies: SetProperty<String>
-
-    @get:OutputFile
-    abstract val expectedFile: RegularFileProperty
-
-    @TaskAction
-    fun write() {
-        expectedFile.get().asFile.writeText(
-            "# Transitive runtime dependencies of the release APK (group:artifact).\n" +
-                "# Verified by :app:verifyReleaseDependencies (runs with `check`); regenerate\n" +
-                "# with :app:writeExpectedDependencies and keep THIRD_PARTY_LICENSES.md in sync.\n" +
-                actualDependencies.get().toSortedSet().joinToString("\n", postfix = "\n")
-        )
-    }
-}
-
-// Guards the no-network product spec at the artifact level: the merged release
-// manifest must declare exactly these permissions, so neither our own manifest nor
-// a library's can (re)introduce INTERNET.
-abstract class VerifyAppPermissionsTask : DefaultTask() {
-    @get:InputFile
-    abstract val mergedManifest: RegularFileProperty
-
-    @get:Input
-    abstract val expectedPermissions: SetProperty<String>
-
-    @TaskAction
-    fun verify() {
-        val actual = Regex("<uses-permission[^>]*android:name=\"([^\"]+)\"")
-            .findAll(mergedManifest.get().asFile.readText())
-            .map { it.groupValues[1] }
-            // androidx-core auto-defines this app-private signature permission (named
-            // after the applicationId) to sandbox unexported dynamic receivers; it
-            // grants no capability, so it's exempt from the allowlist
-            .filterNot { it.endsWith(".DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION") }
-            .toSortedSet()
-        val expected = expectedPermissions.get().toSortedSet()
-        if (expected == actual) return
-        throw GradleException(buildString {
-            appendLine("Merged release manifest permissions don't match the expected set.")
-            (actual - expected).forEach { appendLine("  unexpected: $it") }
-            (expected - actual).forEach { appendLine("  missing:    $it") }
-            appendLine("This app must stay fully offline (never add INTERNET — see AGENTS.md);")
-            appendLine("deliberate permission changes update the list in app/build.gradle.kts.")
-        })
-    }
-}
-
 androidComponents {
     onVariants { variant ->
         variant.sources.kotlin?.addGeneratedSourceDirectory(
             generateLicenseNotices,
             GenerateLicenseNoticesTask::outDir,
         )
-
-        if (variant.name == "release") {
-            // resolution happens lazily at execution time via the rootComponent provider
-            val dependencies = variant.runtimeConfiguration.incoming.resolutionResult.rootComponent
-                .map { root ->
-                    val seen = LinkedHashSet<ResolvedComponentResult>()
-                    val queue = ArrayDeque(listOf(root))
-                    while (queue.isNotEmpty()) {
-                        val component = queue.removeFirst()
-                        if (seen.add(component)) {
-                            queue.addAll(
-                                component.dependencies
-                                    .filterIsInstance<ResolvedDependencyResult>()
-                                    .map { it.selected }
-                            )
-                        }
-                    }
-                    seen.mapNotNull { component ->
-                        (component.id as? ModuleComponentIdentifier)?.let { "${it.group}:${it.module}" }
-                    }.toSortedSet()
-                }
-            val expectedDependenciesFile = layout.projectDirectory.file("expected-dependencies.txt")
-
-            val verifyDependencies =
-                tasks.register<VerifyAppDependenciesTask>("verifyReleaseDependencies") {
-                    actualDependencies.set(dependencies)
-                    expectedFile.set(expectedDependenciesFile)
-                }
-            tasks.register<WriteExpectedAppDependenciesTask>("writeExpectedDependencies") {
-                actualDependencies.set(dependencies)
-                expectedFile.set(expectedDependenciesFile)
-            }
-            val verifyPermissions =
-                tasks.register<VerifyAppPermissionsTask>("verifyReleasePermissions") {
-                    mergedManifest.set(variant.artifacts.get(SingleArtifact.MERGED_MANIFEST))
-                    expectedPermissions.set(
-                        setOf(
-                            "android.permission.POST_NOTIFICATIONS",
-                            "android.permission.RECEIVE_BOOT_COMPLETED",
-                            "android.permission.SCHEDULE_EXACT_ALARM",
-                            "android.permission.USE_EXACT_ALARM",
-                        )
-                    )
-                }
-            tasks.named("check") { dependsOn(verifyDependencies, verifyPermissions) }
-        }
     }
 }
 
