@@ -16,7 +16,8 @@
 - While the Notes summary is visible side-by-side with the calendar, tapping a
   row in the summary smooth-scrolls the calendar to reveal that entry's month;
   the tapped day's cell pinpoints itself with a combined grow/shrink pulse and
-  diagonal glare sweep that starts as the cell scrolls into view.
+  diagonal glare sweep that starts as the cell scrolls into view and plays
+  twice in a row.
 
 - Internal: replaced the hand-written `AppViewModelFactory` with Metro's
   `metrox-viewmodel` / `metrox-viewmodel-compose` artifacts. ViewModels are now

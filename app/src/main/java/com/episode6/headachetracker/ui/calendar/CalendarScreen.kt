@@ -567,25 +567,28 @@ fun DayCell(
     val isToday = date == LocalDate.now()
 
     // Emphasis animation for a notes-summary reveal: a springy grow/shrink pulse
-    // and a diagonal glare sweep (0..1 tracks the band's travel), played together.
+    // and a diagonal glare sweep (0..1 tracks the band's travel), played together
+    // and repeated twice.
     val pulseScale = remember { Animatable(1f) }
     val glareProgress = remember { Animatable(0f) }
     if (emphasize) {
         LaunchedEffect(Unit) {
             try {
-                coroutineScope {
-                    launch {
-                        pulseScale.animateTo(1.2f, tween(160, easing = FastOutSlowInEasing))
-                        pulseScale.animateTo(1f, tween(160))
-                        pulseScale.animateTo(1.15f, tween(140))
-                        pulseScale.animateTo(
-                            1f,
-                            spring(dampingRatio = Spring.DampingRatioMediumBouncy),
-                        )
-                    }
-                    launch {
-                        glareProgress.snapTo(0f)
-                        glareProgress.animateTo(1f, tween(650, easing = FastOutSlowInEasing))
+                repeat(2) {
+                    coroutineScope {
+                        launch {
+                            pulseScale.animateTo(1.2f, tween(160, easing = FastOutSlowInEasing))
+                            pulseScale.animateTo(1f, tween(160))
+                            pulseScale.animateTo(1.15f, tween(140))
+                            pulseScale.animateTo(
+                                1f,
+                                spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+                            )
+                        }
+                        launch {
+                            glareProgress.snapTo(0f)
+                            glareProgress.animateTo(1f, tween(650, easing = FastOutSlowInEasing))
+                        }
                     }
                 }
             } finally {
