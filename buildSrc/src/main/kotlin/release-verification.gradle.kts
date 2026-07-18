@@ -38,15 +38,20 @@ extensions.configure<ApplicationAndroidComponentsExtension> {
             }
         val expectedDependenciesFile = layout.projectDirectory.file("expected-dependencies.txt")
 
+        val writeExpectedDependencies =
+            tasks.register<WriteExpectedAppDependenciesTask>("writeExpectedDependencies") {
+                actualDependencies.set(dependencies)
+                expectedFile.set(expectedDependenciesFile)
+            }
         val verifyDependencies =
             tasks.register<VerifyAppDependenciesTask>("verifyReleaseDependencies") {
                 actualDependencies.set(dependencies)
                 expectedFile.set(expectedDependenciesFile)
+                // the verify input is the write task's output; ordering keeps a combined
+                // `writeExpectedDependencies check` invocation valid (and verifying the
+                // freshly written file)
+                mustRunAfter(writeExpectedDependencies)
             }
-        tasks.register<WriteExpectedAppDependenciesTask>("writeExpectedDependencies") {
-            actualDependencies.set(dependencies)
-            expectedFile.set(expectedDependenciesFile)
-        }
         val verifyPermissions =
             tasks.register<VerifyAppPermissionsTask>("verifyReleasePermissions") {
                 mergedManifest.set(variant.artifacts.get(SingleArtifact.MERGED_MANIFEST))
