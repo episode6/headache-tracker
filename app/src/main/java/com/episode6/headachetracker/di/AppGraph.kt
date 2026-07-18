@@ -11,15 +11,14 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
+import dev.zacsweers.metrox.viewmodel.ViewModelGraph
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 
 @DependencyGraph(AppScope::class)
 @SingleIn(AppScope::class)
-interface AppGraph {
-
-    val viewModelFactory: AppViewModelFactory
+interface AppGraph : ViewModelGraph {
 
     fun inject(app: HeadacheTrackerApp)
 

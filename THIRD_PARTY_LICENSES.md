@@ -21,7 +21,8 @@ The app ships with the following libraries, used under the **Apache License 2.0*
 - **Accompanist** (permissions) — © Google LLC —
   <https://github.com/google/accompanist>
 - **Okio** (via DataStore) — © Square, Inc. — <https://square.github.io/okio/>
-- **Metro** runtime — © Zac Sweers — <https://github.com/ZacSweers/metro>
+- **Metro** (runtime, MetroX ViewModel + ViewModel Compose) — © Zac Sweers —
+  <https://github.com/ZacSweers/metro>
 - **Guava ListenableFuture** and **Error Prone** annotations — © Google LLC —
   <https://github.com/google/guava>
 - **JSpecify** annotations — © The JSpecify Authors — <https://jspecify.dev>
