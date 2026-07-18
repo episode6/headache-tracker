@@ -3,9 +3,10 @@
 ### v1.0.10 - Unreleased
 
 - Added a Notes summary screen (calendar 3-dots menu → Notes summary): a vertical
-  list of only the days that have notes, newest first. Each row shows the date, a
-  combined severity/pill-count indicator (the same colored square + pill dots used
-  by the calendar), and the note text.
+  list of only the days that have notes, segmented by year. Each row shows the
+  month + day, a combined severity/pill-count indicator (the same colored square +
+  pill dots used by the calendar), and the note text. The list opens anchored to
+  the bottom (the most recent note), so you scroll up to read into the past.
 
 - Fixed the edit-day pane blanking out before its exit transition finished when
   backing out (or saving) on phones — the pane now keeps its content while it

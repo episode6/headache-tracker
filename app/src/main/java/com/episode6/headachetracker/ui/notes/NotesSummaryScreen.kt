@@ -65,7 +65,7 @@ fun NotesSummaryScreen(
             )
         },
     ) { padding ->
-        if (state.entries.isEmpty()) {
+        if (state.yearGroups.isEmpty()) {
             if (!state.isLoading) {
                 NotesSummaryEmptyState(
                     modifier = Modifier
@@ -74,21 +74,53 @@ fun NotesSummaryScreen(
                 )
             }
         } else {
+            // reverseLayout anchors the list to the bottom (the most recent note),
+            // so scrolling up reads into the past. Items are emitted bottom-up:
+            // per year group, entries newest-first, then that year's header.
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding),
+                reverseLayout = true,
                 contentPadding = PaddingValues(vertical = 8.dp),
             ) {
-                itemsIndexed(state.entries, key = { _, entry -> entry.date }) { index, entry ->
-                    NotesSummaryRow(entry = entry)
-                    if (index < state.entries.lastIndex) {
-                        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                state.yearGroups.forEach { group ->
+                    itemsIndexed(
+                        items = group.entries,
+                        key = { _, entry -> entry.date },
+                    ) { index, entry ->
+                        Column {
+                            // separates this row from the one above it; the visually
+                            // topmost row of the group sits under the year header instead
+                            if (index < group.entries.lastIndex) {
+                                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                            }
+                            NotesSummaryRow(entry = entry)
+                        }
+                    }
+                    item(key = "year-${group.year}") {
+                        YearHeader(year = group.year)
                     }
                 }
             }
         }
     }
+}
+
+@Composable
+private fun YearHeader(
+    year: Int,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = year.toString(),
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp, top = 20.dp, bottom = 4.dp),
+    )
 }
 
 @Composable
@@ -98,7 +130,7 @@ private fun NotesSummaryRow(
 ) {
     val locale = LocalLocale.current.platformLocale
     val dateFormatter = remember(locale) {
-        DateTimeFormatter.ofPattern("EEE, MMM d, uuuu", locale)
+        DateTimeFormatter.ofPattern("MMM d", locale)
     }
     val date = remember(entry.date) { LocalDate.parse(entry.date) }
 
@@ -158,18 +190,34 @@ private fun NotesSummaryScreenPreview() {
     HeadacheTrackerTheme {
         NotesSummaryScreen(
             state = NotesSummaryState(
-                entries = listOf(
-                    HeadacheEntry(
-                        date = "2026-07-16",
-                        intensity = 2,
-                        pillsTaken = 1,
-                        notes = "Woke up with a headache, took a pill after breakfast.",
+                yearGroups = listOf(
+                    NotesYearGroup(
+                        year = 2026,
+                        entries = listOf(
+                            HeadacheEntry(
+                                date = "2026-07-16",
+                                intensity = 2,
+                                pillsTaken = 1,
+                                notes = "Woke up with a headache, took a pill after breakfast.",
+                            ),
+                            HeadacheEntry(
+                                date = "2026-07-10",
+                                intensity = 3,
+                                pillsTaken = 2,
+                                notes = "Bad one. Second pill in the afternoon helped a little.",
+                            ),
+                        ),
                     ),
-                    HeadacheEntry(
-                        date = "2026-07-10",
-                        intensity = 3,
-                        pillsTaken = 2,
-                        notes = "Bad one. Second pill in the afternoon helped a little.",
+                    NotesYearGroup(
+                        year = 2025,
+                        entries = listOf(
+                            HeadacheEntry(
+                                date = "2025-12-30",
+                                intensity = 1,
+                                pillsTaken = 0,
+                                notes = "Mild pressure behind the eyes, went away on its own.",
+                            ),
+                        ),
                     ),
                 ),
                 isLoading = false,
