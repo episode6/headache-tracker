@@ -49,21 +49,9 @@ fun HeadacheTrackerNavigation(initialEditDate: String? = null) {
                 onNavigateToFullYear = { year ->
                     navController.navigate(Route.FullYear(year))
                 },
-                onNavigateToNotesSummary = {
-                    navController.navigate(Route.NotesSummary)
-                },
                 onNavigateToSettings = {
                     navController.navigate(Route.Settings)
                 },
-            )
-        }
-        composable<Route.NotesSummary> {
-            val viewModel: NotesSummaryViewModel = metroViewModel()
-            val state by viewModel.state.collectAsStateWithLifecycle()
-
-            NotesSummaryScreen(
-                state = state,
-                onBack = { navController.popBackStack() },
             )
         }
         composable<Route.Settings> {
@@ -171,27 +159,35 @@ fun HeadacheTrackerNavigation(initialEditDate: String? = null) {
 @Composable
 fun AdaptiveCalendarScreen(
     onNavigateToFullYear: (Int) -> Unit,
-    onNavigateToNotesSummary: () -> Unit,
     onNavigateToSettings: () -> Unit,
     initialSelectedDate: String? = null,
 ) {
     val context = LocalContext.current
     val resources = LocalResources.current
     var selectedDate by rememberSaveable { mutableStateOf(initialSelectedDate) }
-    // Retains the last selected date so the edit pane keeps its content while animating out
-    // (selectedDate is nulled immediately on back/save, before the exit transition finishes).
+    // The detail pane shows either the edit screen (selectedDate != null) or the notes
+    // summary; the two are mutually exclusive and every event that opens one clears the other.
+    var showNotesSummary by rememberSaveable { mutableStateOf(false) }
+    val detailOpen = selectedDate != null || showNotesSummary
+    // Retains the last detail content so the pane keeps rendering while animating out
+    // (selectedDate/showNotesSummary reset immediately on back/save, before the exit
+    // transition finishes).
     var lastEditDate by rememberSaveable { mutableStateOf(initialSelectedDate) }
+    var lastDetailWasNotes by rememberSaveable { mutableStateOf(false) }
     selectedDate?.let { lastEditDate = it }
+    if (detailOpen) {
+        lastDetailWasNotes = showNotesSummary
+    }
 
     val adaptiveInfo = currentWindowAdaptiveInfo()
     val directive = calculatePaneScaffoldDirective(adaptiveInfo)
     val isSideBySide = directive.maxHorizontalPartitions > 1
 
     val scaffoldValue = calculateThreePaneScaffoldValue(
-        maxHorizontalPartitions = if (selectedDate == null) 1 else directive.maxHorizontalPartitions,
+        maxHorizontalPartitions = if (!detailOpen) 1 else directive.maxHorizontalPartitions,
         adaptStrategies = ListDetailPaneScaffoldDefaults.adaptStrategies(),
         currentDestination = ThreePaneScaffoldDestinationItem<String>(
-            if (selectedDate == null) ListDetailPaneScaffoldRole.List else ListDetailPaneScaffoldRole.Detail
+            if (!detailOpen) ListDetailPaneScaffoldRole.List else ListDetailPaneScaffoldRole.Detail
         )
     )
 
@@ -208,58 +204,75 @@ fun AdaptiveCalendarScreen(
                     onMonthChanged = { viewModel.onMonthChanged(it) },
                     onYearSelected = { viewModel.onYearSelected(it) },
                     onDayClick = { date ->
+                        showNotesSummary = false
                         selectedDate = date.toString()
                     },
                     onFullYearClick = {
                         onNavigateToFullYear(state.selectedMonth.year)
                     },
-                    onNotesSummaryClick = onNavigateToNotesSummary,
+                    onNotesSummaryClick = {
+                        selectedDate = null
+                        showNotesSummary = true
+                    },
                     onSettingsClick = onNavigateToSettings,
                     onTodayEntryClick = {
+                        showNotesSummary = false
                         selectedDate = LocalDate.now().toString()
                     },
+                    highlightNotedDays = isSideBySide && showNotesSummary,
                 )
             }
         },
         detailPane = {
             AnimatedPane {
-                val dateKey = lastEditDate
-                if (dateKey != null) {
-                    val viewModel: EditViewModel =
-                        assistedMetroViewModel<EditViewModel, EditViewModel.Factory>(
-                            key = dateKey,
-                        ) { create(dateKey) }
-                    val state by viewModel.state.collectAsState()
-                    EditScreen(
+                if (lastDetailWasNotes) {
+                    val viewModel: NotesSummaryViewModel = metroViewModel()
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+
+                    NotesSummaryScreen(
                         state = state,
-                        onIntensityChanged = { viewModel.onIntensityChanged(it) },
-                        onPillsTakenChanged = { viewModel.onPillsTakenChanged(it) },
-                        onFirstPillTimeChanged = { viewModel.onFirstPillTimeChanged(it) },
-                        onSecondPillTimeChanged = { viewModel.onSecondPillTimeChanged(it) },
-                        onNotesChanged = { viewModel.onNotesChanged(it) },
-                        onSave = {
-                            viewModel.saveEntry {
-                                if (isSideBySide) {
-                                    Toast.makeText(
-                                        context,
-                                        resources.getString(R.string.entry_saved_toast),
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                } else {
-                                    selectedDate = null
-                                }
-                            }
-                        },
-                        onBack = {
-                            selectedDate = null
-                        },
+                        onBack = { showNotesSummary = false },
                     )
+                } else {
+                    val dateKey = lastEditDate
+                    if (dateKey != null) {
+                        val viewModel: EditViewModel =
+                            assistedMetroViewModel<EditViewModel, EditViewModel.Factory>(
+                                key = dateKey,
+                            ) { create(dateKey) }
+                        val state by viewModel.state.collectAsState()
+                        EditScreen(
+                            state = state,
+                            onIntensityChanged = { viewModel.onIntensityChanged(it) },
+                            onPillsTakenChanged = { viewModel.onPillsTakenChanged(it) },
+                            onFirstPillTimeChanged = { viewModel.onFirstPillTimeChanged(it) },
+                            onSecondPillTimeChanged = { viewModel.onSecondPillTimeChanged(it) },
+                            onNotesChanged = { viewModel.onNotesChanged(it) },
+                            onSave = {
+                                viewModel.saveEntry {
+                                    if (isSideBySide) {
+                                        Toast.makeText(
+                                            context,
+                                            resources.getString(R.string.entry_saved_toast),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    } else {
+                                        selectedDate = null
+                                    }
+                                }
+                            },
+                            onBack = {
+                                selectedDate = null
+                            },
+                        )
+                    }
                 }
             }
         }
     )
 
-    BackHandler(enabled = selectedDate != null) {
+    BackHandler(enabled = detailOpen) {
         selectedDate = null
+        showNotesSummary = false
     }
 }

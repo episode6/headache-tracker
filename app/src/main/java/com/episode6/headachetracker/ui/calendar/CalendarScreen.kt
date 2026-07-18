@@ -63,6 +63,7 @@ fun CalendarScreen(
     onNotesSummaryClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onTodayEntryClick: () -> Unit,
+    highlightNotedDays: Boolean = false,
 ) {
     val initialMonth = remember { YearMonth.now() }
 
@@ -134,6 +135,7 @@ fun CalendarScreen(
                     entries = state.entries,
                     onMonthChanged = onMonthChanged,
                     onDayClick = onDayClick,
+                    highlightNotedDays = highlightNotedDays,
                 )
             } else {
                 CalendarHorizontalPager(
@@ -142,6 +144,7 @@ fun CalendarScreen(
                     entries = state.entries,
                     onMonthChanged = onMonthChanged,
                     onDayClick = onDayClick,
+                    highlightNotedDays = highlightNotedDays,
                 )
             }
         }
@@ -155,6 +158,7 @@ private fun CalendarHorizontalPager(
     entries: Map<String, HeadacheEntry>,
     onMonthChanged: (YearMonth) -> Unit,
     onDayClick: (LocalDate) -> Unit,
+    highlightNotedDays: Boolean,
 ) {
     val pagerState = rememberPagerState(
         initialPage = monthIndexFor(initialMonth, selectedMonth),
@@ -188,6 +192,7 @@ private fun CalendarHorizontalPager(
                 month = month,
                 entries = entries,
                 onDayClick = onDayClick,
+                highlightNotedDays = highlightNotedDays,
             )
         }
     }
@@ -200,6 +205,7 @@ private fun CalendarVerticalMonthList(
     entries: Map<String, HeadacheEntry>,
     onMonthChanged: (YearMonth) -> Unit,
     onDayClick: (LocalDate) -> Unit,
+    highlightNotedDays: Boolean,
 ) {
     val listState = rememberLazyListState(
         initialFirstVisibleItemIndex = monthIndexFor(initialMonth, selectedMonth),
@@ -245,6 +251,7 @@ private fun CalendarVerticalMonthList(
                     month = month,
                     entries = entries,
                     onDayClick = onDayClick,
+                    highlightNotedDays = highlightNotedDays,
                 )
             }
 
@@ -401,6 +408,7 @@ fun MonthView(
     entries: Map<String, HeadacheEntry>,
     onDayClick: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
+    highlightNotedDays: Boolean = false,
 ) {
     val firstDayOfMonth = month.atDay(1)
     val daysInMonth = month.lengthOfMonth()
@@ -436,6 +444,8 @@ fun MonthView(
                                 pillsTaken = entry?.pillsTaken ?: 0,
                                 onClick = { if (!isFuture) onDayClick(date) },
                                 isFuture = isFuture,
+                                hasNotesHighlight = highlightNotedDays &&
+                                    !entry?.notes.isNullOrBlank(),
                             )
                         } else {
                             Spacer(modifier = Modifier.aspectRatio(1f))
@@ -456,6 +466,7 @@ fun DayCell(
     intensity: Int,
     pillsTaken: Int,
     isFuture: Boolean = false,
+    hasNotesHighlight: Boolean = false,
     onClick: () -> Unit
 ) {
     val backgroundColor = when (intensity) {
@@ -476,15 +487,23 @@ fun DayCell(
                 if (!isFuture) Modifier.clickable(onClick = onClick) else Modifier
             )
             .then(
-                if (isToday) {
-                    Modifier
+                when {
+                    // The today marker takes precedence over the notes highlight
+                    isToday -> Modifier
                         .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
                         .border(
                             width = 3.dp,
                             color = MaterialTheme.colorScheme.tertiary,
                             shape = MaterialTheme.shapes.medium
                         )
-                } else Modifier
+                    hasNotesHighlight -> Modifier
+                        .border(
+                            width = 3.dp,
+                            color = NoteHighlightBorder,
+                            shape = MaterialTheme.shapes.medium
+                        )
+                    else -> Modifier
+                }
             ),
         contentAlignment = Alignment.Center
     ) {

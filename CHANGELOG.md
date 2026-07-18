@@ -2,6 +2,15 @@
 
 ### v1.0.10 - Unreleased
 
+- The Notes summary now opens in the adaptive detail pane (like the edit-day
+  screen) instead of a separate navigation destination: on large/unfolded
+  devices it shows side-by-side with the calendar; on phones it still covers
+  the calendar full-screen.
+
+- While the Notes summary is visible side-by-side with the calendar, days that
+  have notes attached get a dark navy border in the calendar so they're easy to
+  spot (the today marker still takes precedence).
+
 - Internal: replaced the hand-written `AppViewModelFactory` with Metro's
   `metrox-viewmodel` / `metrox-viewmodel-compose` artifacts. ViewModels are now
   contributed to the DI graph via `@ViewModelKey` / `ManualViewModelAssistedFactory`
