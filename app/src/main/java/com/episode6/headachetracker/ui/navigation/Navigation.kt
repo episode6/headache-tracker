@@ -24,6 +24,7 @@ import com.episode6.headachetracker.ui.calendar.CalendarScreen
 import com.episode6.headachetracker.ui.calendar.CalendarViewModel
 import com.episode6.headachetracker.ui.calendar.FullYearScreen
 import com.episode6.headachetracker.ui.calendar.FullYearViewModel
+import com.episode6.headachetracker.ui.calendar.RevealRequest
 import com.episode6.headachetracker.ui.edit.EditScreen
 import com.episode6.headachetracker.ui.licenses.LicensesScreen
 import com.episode6.headachetracker.ui.edit.EditViewModel
@@ -180,8 +181,12 @@ fun AdaptiveCalendarScreen(
     }
     // Set when a notes-summary row is tapped side-by-side; consumed by the calendar
     // once it has animated to that month (the day cell's emphasis animation starts
-    // immediately, so it's already running as the cell scrolls into view).
-    var revealDate by remember { mutableStateOf<LocalDate?>(null) }
+    // immediately, so it's already running as the cell scrolls into view). Each tap
+    // gets a fresh id so it interrupts any still-running reveal animation — even a
+    // re-tap of the same row — and the id-guarded clear keeps a cancelled request
+    // from consuming the one that replaced it.
+    var revealRequest by remember { mutableStateOf<RevealRequest?>(null) }
+    var revealRequestCounter by remember { mutableLongStateOf(0L) }
 
     val adaptiveInfo = currentWindowAdaptiveInfo()
     val directive = calculatePaneScaffoldDirective(adaptiveInfo)
@@ -224,8 +229,10 @@ fun AdaptiveCalendarScreen(
                         selectedDate = LocalDate.now().toString()
                     },
                     highlightNotedDays = isSideBySide && showNotesSummary,
-                    smoothScrollToDate = revealDate,
-                    onSmoothScrollHandled = { revealDate = null },
+                    revealRequest = revealRequest,
+                    onRevealScrollHandled = { id ->
+                        if (revealRequest?.id == id) revealRequest = null
+                    },
                 )
             }
         },
@@ -239,7 +246,7 @@ fun AdaptiveCalendarScreen(
                         state = state,
                         onBack = { showNotesSummary = false },
                         onEntryClick = if (isSideBySide) {
-                            { date -> revealDate = date }
+                            { date -> revealRequest = RevealRequest(date, ++revealRequestCounter) }
                         } else null,
                     )
                 } else {
