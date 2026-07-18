@@ -3,6 +3,7 @@ package com.episode6.headachetracker.ui.calendar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -319,6 +320,7 @@ fun CompactDayCell(
     intensity: Int,
     pillsTaken: Int,
     modifier: Modifier = Modifier,
+    hasNotesHighlight: Boolean = false,
 ) {
     val backgroundColor = when (intensity) {
         1 -> Intensity1
@@ -336,16 +338,26 @@ fun CompactDayCell(
             .clip(MaterialTheme.shapes.small)
             .background(if (isFuture) backgroundColor.copy(alpha = 0.3f) else backgroundColor)
             .then(
-                if (isToday) {
-                    Modifier
+                when {
+                    // The today marker takes precedence over the notes highlight
+                    isToday -> Modifier
                         .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
                         .border(
                             width = 2.dp,
                             color = MaterialTheme.colorScheme.tertiary,
                             shape = MaterialTheme.shapes.small,
                         )
-                } else {
-                    Modifier
+                    hasNotesHighlight -> Modifier
+                        .border(
+                            width = 2.dp,
+                            color = if (isSystemInDarkTheme()) {
+                                NoteHighlightBorderDark
+                            } else {
+                                NoteHighlightBorderLight
+                            },
+                            shape = MaterialTheme.shapes.small,
+                        )
+                    else -> Modifier
                 },
             ),
         contentAlignment = Alignment.Center,

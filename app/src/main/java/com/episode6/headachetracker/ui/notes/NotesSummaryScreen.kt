@@ -145,6 +145,7 @@ private fun NotesSummaryRow(
             intensity = entry.intensity,
             pillsTaken = entry.pillsTaken,
             modifier = Modifier.size(40.dp),
+            hasNotesHighlight = true,
         )
         Column(modifier = Modifier.weight(1f)) {
             Text(
