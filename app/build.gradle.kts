@@ -90,6 +90,9 @@ android {
     buildFeatures {
         compose = true
     }
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 // LicenseNotices.kt embeds THIRD_PARTY_LICENSES.md so the in-app licenses screen always
