@@ -31,6 +31,8 @@ import com.episode6.headachetracker.ui.calendar.FullYearViewModel
 import com.episode6.headachetracker.ui.edit.EditScreen
 import com.episode6.headachetracker.ui.licenses.LicensesScreen
 import com.episode6.headachetracker.ui.edit.EditViewModel
+import com.episode6.headachetracker.ui.notes.NotesSummaryScreen
+import com.episode6.headachetracker.ui.notes.NotesSummaryViewModel
 import com.episode6.headachetracker.ui.settings.DataTransferMessage
 import com.episode6.headachetracker.ui.settings.SettingsScreen
 import com.episode6.headachetracker.ui.settings.SettingsViewModel
@@ -49,9 +51,23 @@ fun HeadacheTrackerNavigation(initialEditDate: String? = null) {
                 onNavigateToFullYear = { year ->
                     navController.navigate(Route.FullYear(year))
                 },
+                onNavigateToNotesSummary = {
+                    navController.navigate(Route.NotesSummary)
+                },
                 onNavigateToSettings = {
                     navController.navigate(Route.Settings)
                 },
+            )
+        }
+        composable<Route.NotesSummary> {
+            val context = LocalContext.current
+            val viewModelFactory = remember { context.appGraph.viewModelFactory }
+            val viewModel: NotesSummaryViewModel = viewModel(factory = viewModelFactory)
+            val state by viewModel.state.collectAsStateWithLifecycle()
+
+            NotesSummaryScreen(
+                state = state,
+                onBack = { navController.popBackStack() },
             )
         }
         composable<Route.Settings> {
@@ -165,6 +181,7 @@ fun HeadacheTrackerNavigation(initialEditDate: String? = null) {
 @Composable
 fun AdaptiveCalendarScreen(
     onNavigateToFullYear: (Int) -> Unit,
+    onNavigateToNotesSummary: () -> Unit,
     onNavigateToSettings: () -> Unit,
     initialSelectedDate: String? = null,
 ) {
@@ -207,6 +224,7 @@ fun AdaptiveCalendarScreen(
                     onFullYearClick = {
                         onNavigateToFullYear(state.selectedMonth.year)
                     },
+                    onNotesSummaryClick = onNavigateToNotesSummary,
                     onSettingsClick = onNavigateToSettings,
                     onTodayEntryClick = {
                         selectedDate = LocalDate.now().toString()
