@@ -61,7 +61,7 @@ class ReminderReceiverIntegrationTest {
 
         SecondPillReminderReceiver().handle(context)
 
-        assertEquals(1, activeNotifications(SecondPillReminderReceiver.NOTIFICATION_ID))
+        awaitNotificationCount(SecondPillReminderReceiver.NOTIFICATION_ID, 1)
         assertNull(settings.pendingSecondPillReminderAt.first())
     }
 
@@ -81,7 +81,7 @@ class ReminderReceiverIntegrationTest {
     fun morningCheckInReceiver_postsNotificationWhenEnabled() = runBlocking {
         MorningCheckInReceiver().handle(context)
 
-        assertEquals(1, activeNotifications(MorningCheckInReceiver.NOTIFICATION_ID))
+        awaitNotificationCount(MorningCheckInReceiver.NOTIFICATION_ID, 1)
     }
 
     @Test
@@ -90,11 +90,32 @@ class ReminderReceiverIntegrationTest {
 
         MorningCheckInReceiver().handle(context)
 
+        // notification posting is async, so an immediate zero-count is trivially true;
+        // give a would-be notification a grace period to appear before asserting absence
+        Thread.sleep(NEGATIVE_GRACE_MS)
         assertEquals(0, activeNotifications(MorningCheckInReceiver.NOTIFICATION_ID))
+    }
+
+    // NotificationManager.notify posts asynchronously — asserting the active list right
+    // after a receiver returns is a race that flakes on slow CI emulators, so poll
+    private fun awaitNotificationCount(id: Int, expected: Int) {
+        val deadline = System.currentTimeMillis() + AWAIT_TIMEOUT_MS
+        var count = activeNotifications(id)
+        while (count != expected && System.currentTimeMillis() < deadline) {
+            Thread.sleep(POLL_INTERVAL_MS)
+            count = activeNotifications(id)
+        }
+        assertEquals(expected, count)
     }
 
     private fun activeNotifications(id: Int): Int = context
         .getSystemService(NotificationManager::class.java)
         .activeNotifications
         .count { it.id == id }
+
+    private companion object {
+        const val AWAIT_TIMEOUT_MS = 5_000L
+        const val POLL_INTERVAL_MS = 100L
+        const val NEGATIVE_GRACE_MS = 500L
+    }
 }

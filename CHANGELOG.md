@@ -2,6 +2,10 @@
 
 ### v1.0.10 - Unreleased
 
+- Internal: de-flaked the reminder-receiver instrumented tests — notification
+  posting is asynchronous, so the tests now poll for the expected notification
+  (with a timeout) instead of asserting immediately, and the "posts nothing"
+  case waits a grace period before asserting absence.
 - Added a "Check for updates" item to the calendar's 3-dots menu. It opens the
   browser — the main-branch commit log for snapshot builds, the latest GitHub
   release page for release builds — since the app has no network access of its
