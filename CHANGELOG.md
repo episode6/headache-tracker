@@ -2,6 +2,9 @@
 
 ### v1.0.10 - Unreleased
 
+- Debug builds now use a yellow launcher-icon background (overriding both the purple
+  release background and the dark-charcoal snapshot background) so debug installs are
+  distinguishable at a glance.
 - The Notes summary now opens in the adaptive detail pane (like the edit-day
   screen) instead of a separate navigation destination: on large/unfolded
   devices it shows side-by-side with the calendar; on phones it still covers
