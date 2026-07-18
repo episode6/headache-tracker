@@ -1,6 +1,6 @@
 # Headache Tracker Changelog
 
-### v1.1.0 - Unreleased
+### v1.1.0 - 2026-07-18
 
 - Internal: de-flaked the reminder-receiver instrumented tests — notification
   posting is asynchronous, so the tests now poll for the expected notification
