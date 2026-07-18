@@ -2,6 +2,17 @@
 
 ### v1.0.10 - Unreleased
 
+- Added a "Check for updates" item to the calendar's 3-dots menu. It opens the
+  browser — the main-branch commit log for snapshot builds, the latest GitHub
+  release page for release builds — since the app has no network access of its
+  own.
+- Removed the unused `INTERNET` permission (leftover template boilerplate from
+  the initial import). The app is fully offline by spec and must never request
+  it.
+- Internal: new build checks (wired into `check`, so they run in CI) pin the
+  release APK's exact dependency set to `app/expected-dependencies.txt` and its
+  merged-manifest permissions to an allowlist, so no library or manifest change
+  can introduce network access (or any new dependency/permission) unnoticed.
 - Debug builds now use a yellow launcher-icon background (overriding both the purple
   release background and the dark-charcoal snapshot background) so debug installs are
   distinguishable at a glance.

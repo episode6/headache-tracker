@@ -13,6 +13,8 @@ The calendar visualizes intensity with fixed theme colors (`Intensity0`–`Inten
 
 There is no backend. Export/import uses versioned JSON files via `HeadacheBackupManager`.
 
+**No network access — ever.** This app must never request the `INTERNET` permission; being fully offline is part of the product spec. Anything update- or web-related must go through the browser instead: the "Check for updates" menu item just opens the GitHub commits page (snapshot builds) or latest-release page (release builds) via an `ACTION_VIEW` URL, chosen at build time through the `check_for_updates_url` resValue in `app/build.gradle.kts`. Enforced by `:app:verifyReleasePermissions` (merged-manifest permission allowlist) and `:app:verifyReleaseDependencies` (release dependency set pinned to `app/expected-dependencies.txt`), both wired into `check` and therefore CI.
+
 ---
 
 ## Package map
@@ -262,12 +264,13 @@ The repo has placeholder `ExampleUnitTest` / `ExampleInstrumentedTest` only. The
 
 | Pitfall | Guidance |
 |---------|----------|
+| INTERNET permission | Never add it (or any network dependency). The app is offline by spec; open URLs in the browser instead. |
 | Nested lazy lists | Never put `LazyVerticalGrid` inside `LazyColumn`. Use fixed row/column layouts for month grids. |
 | Pager/list sync loops | Guard `onMonthChanged` / scroll updates with `if (selectedMonth != target)` before calling callbacks. |
 | ViewModel in Composables | Always pass `viewModelFactory` from `context.appGraph`; use `key =` for parameterized VMs. |
 | Date format | Store and pass dates as `LocalDate.toString()` (`YYYY-MM-DD`) consistently. |
 | Unused routes | `Route.EditEntry` exists for type-safe nav extensibility; edit currently uses adaptive pane state instead. |
-| Gradle deps | New dependencies must appear in `THIRD_PARTY_LICENSES.md` (grouped by license), which is embedded into the app at build time. |
+| Gradle deps | New dependencies must appear in `THIRD_PARTY_LICENSES.md` (grouped by license), which is embedded into the app at build time. They must also be added to `app/expected-dependencies.txt` (regenerate with `./gradlew :app:writeExpectedDependencies`) or `:app:verifyReleaseDependencies` fails the build. |
 
 ---
 
