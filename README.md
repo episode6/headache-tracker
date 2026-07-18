@@ -1,6 +1,6 @@
 # Headache Tracker
 
-A local-first Android app for logging daily headache severity on a color-coded calendar. Built with Jetpack Compose and Material Design 3, with adaptive layouts for phones, foldables, and tablets.
+A vibe-coded, local-first Android app for logging daily headache severity on a color-coded calendar. Built with Jetpack Compose and Material Design 3, with adaptive layouts for phones, foldables, and tablets.
 
 ## Features
 
