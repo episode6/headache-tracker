@@ -3,6 +3,7 @@ package com.episode6.headachetracker.ui.calendar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -499,7 +500,11 @@ fun DayCell(
                     hasNotesHighlight -> Modifier
                         .border(
                             width = 3.dp,
-                            color = NoteHighlightBorder,
+                            color = if (isSystemInDarkTheme()) {
+                                NoteHighlightBorderDark
+                            } else {
+                                NoteHighlightBorderLight
+                            },
                             shape = MaterialTheme.shapes.medium
                         )
                     else -> Modifier

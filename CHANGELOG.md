@@ -8,8 +8,9 @@
   the calendar full-screen.
 
 - While the Notes summary is visible side-by-side with the calendar, days that
-  have notes attached get a dark navy border in the calendar so they're easy to
-  spot (the today marker still takes precedence).
+  have notes attached get a high-contrast border in the calendar so they're easy
+  to spot — dark navy in the light theme, white in the dark theme (the today
+  marker still takes precedence).
 
 - Internal: replaced the hand-written `AppViewModelFactory` with Metro's
   `metrox-viewmodel` / `metrox-viewmodel-compose` artifacts. ViewModels are now
