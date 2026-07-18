@@ -82,6 +82,7 @@ fun CalendarScreen(
     onFullYearClick: () -> Unit,
     onNotesSummaryClick: () -> Unit,
     onSettingsClick: () -> Unit,
+    onCheckForUpdatesClick: () -> Unit,
     onTodayEntryClick: () -> Unit,
     highlightNotedDays: Boolean = false,
     revealRequest: RevealRequest? = null,
@@ -136,6 +137,7 @@ fun CalendarScreen(
                         onFullYearClick = onFullYearClick,
                         onNotesSummaryClick = onNotesSummaryClick,
                         onSettingsClick = onSettingsClick,
+                        onCheckForUpdatesClick = onCheckForUpdatesClick,
                     )
                 }
             )
@@ -357,6 +359,7 @@ fun CalendarOverflowMenu(
     onFullYearClick: () -> Unit,
     onNotesSummaryClick: () -> Unit,
     onSettingsClick: () -> Unit,
+    onCheckForUpdatesClick: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -388,6 +391,13 @@ fun CalendarOverflowMenu(
                 onClick = {
                     expanded = false
                     onSettingsClick()
+                },
+            )
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.check_for_updates)) },
+                onClick = {
+                    expanded = false
+                    onCheckForUpdatesClick()
                 },
             )
         }
@@ -725,6 +735,7 @@ fun CalendarScreenPreview() {
             onFullYearClick = {},
             onNotesSummaryClick = {},
             onSettingsClick = {},
+            onCheckForUpdatesClick = {},
             onTodayEntryClick = {},
         )
     }

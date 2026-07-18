@@ -1,4 +1,8 @@
 pluginManagement {
+    // convention plugins (e.g. release-verification) live in an included build rather
+    // than buildSrc: buildSrc's parent classloader would isolate AGP from the Kotlin
+    // compiler plugins (Metro codegen silently stopped applying there)
+    includeBuild("build-logic")
     repositories {
         google {
             content {

@@ -4,6 +4,9 @@ plugins {
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.jetbrains.kotlin.plugin.serialization)
     alias(libs.plugins.metro)
+    // build-logic convention plugin: pins release dependencies to expected-dependencies.txt
+    // and merged-manifest permissions to expected-permissions.txt (both verified by check)
+    id("release-verification")
 }
 
 // derived from self.versions.name in the root build script (see the formula there)
@@ -28,6 +31,14 @@ android {
         // so R + manifest class refs are unaffected)
         applicationId = selfAppId
         resValue("string", "app_name", selfAppName)
+        // "Check for updates" just opens a browser page — this app must never request
+        // the INTERNET permission, so there is no in-app update check. Snapshots point
+        // at the main-branch commit log, releases at the latest GitHub release.
+        resValue(
+            "string", "check_for_updates_url",
+            if (selfIsSnapshot) "https://github.com/episode6/headache-tracker/commits/main/"
+            else "https://github.com/episode6/headache-tracker/releases/latest",
+        )
         // snapshot builds keep the calendar foreground but swap the purple background
         // for dark charcoal, so the two installs are distinguishable at a glance;
         // placeholders resolve at manifest merge, so lint + resource shrinking still

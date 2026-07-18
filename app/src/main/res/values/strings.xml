@@ -12,6 +12,7 @@
     <string name="log_today">Log today</string>
     <string name="auto_export">Auto-Export</string>
     <string name="settings">Settings</string>
+    <string name="check_for_updates">Check for updates</string>
     <string name="second_pill_reminder_minutes_label">Minutes until 2nd-pill reminder</string>
     <string name="notification_settings_button">Notification settings</string>
     <string name="licenses_title">License notices</string>

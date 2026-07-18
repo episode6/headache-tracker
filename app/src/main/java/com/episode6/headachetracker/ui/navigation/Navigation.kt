@@ -14,6 +14,8 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -207,6 +209,8 @@ fun AdaptiveCalendarScreen(
             AnimatedPane {
                 val viewModel: CalendarViewModel = metroViewModel()
                 val state by viewModel.state.collectAsState()
+                val uriHandler = LocalUriHandler.current
+                val checkForUpdatesUrl = stringResource(R.string.check_for_updates_url)
 
                 CalendarScreen(
                     state = state,
@@ -224,6 +228,7 @@ fun AdaptiveCalendarScreen(
                         showNotesSummary = true
                     },
                     onSettingsClick = onNavigateToSettings,
+                    onCheckForUpdatesClick = { uriHandler.openUri(checkForUpdatesUrl) },
                     onTodayEntryClick = {
                         showNotesSummary = false
                         selectedDate = LocalDate.now().toString()
