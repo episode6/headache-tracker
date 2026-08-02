@@ -4,6 +4,9 @@
 
 - Internal: added a `project-icon.svg` to the repo root — an SVG rendition of
   the app's launcher icon, shown by Collins as this project's sidebar icon.
+- Internal: fixed `project-icon.svg` not rendering in Collins — moved the
+  header comment inside the `<svg>` element so the tag appears within the
+  first 256 bytes, which gdk-pixbuf's SVG loader requires.
 
 ### v1.1.0 - 2026-07-18
 
