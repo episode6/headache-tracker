@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-SVG rendition of the app's adaptive launcher icon (ic_launcher_background +
-ic_launcher_foreground), cropped to the icon's visible 72dp region and drawn
-as a rounded square. Used by Collins as this project's sidebar icon.
--->
 <svg width="128" height="128" viewBox="18 18 72 72" xmlns="http://www.w3.org/2000/svg">
+  <!--
+  SVG rendition of the app's adaptive launcher icon (ic_launcher_background +
+  ic_launcher_foreground), cropped to the icon's visible 72dp region and drawn
+  as a rounded square. Used by Collins as this project's sidebar icon.
+
+  The comment lives inside the svg element on purpose: gdk-pixbuf's SVG
+  loader (what Collins renders with) only recognizes the file if "<svg"
+  appears within the first 256 bytes.
+  -->
   <!-- background -->
   <rect x="18" y="18" width="72" height="72" rx="16" fill="#6200EE"/>
 
