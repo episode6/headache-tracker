@@ -2,6 +2,9 @@
 
 ### v1.1.10 - Unreleased
 
+- Internal: added a `project-icon.svg` to the repo root — an SVG rendition of
+  the app's launcher icon, shown by Collins as this project's sidebar icon.
+
 ### v1.1.0 - 2026-07-18
 
 - Internal: de-flaked the reminder-receiver instrumented tests — notification
