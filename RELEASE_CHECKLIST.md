@@ -49,7 +49,7 @@ sonatype. Agent skills in [.agents/](./.agents) automate most of it
   root `build.gradle.kts`; the `namespace` stays fixed at
   `com.episode6.headachetracker`, so R and manifest class references are unaffected).
   Snapshot builds also swap in their own app icon (dark charcoal background; releases
-  keep the purple one) via `manifestPlaceholders` + the `*_snapshot` mipmaps. Debug
+  keep the episode6-orange one) via `manifestPlaceholders` + the `*_snapshot` mipmaps. Debug
   builds go one step further and append a `.debug` applicationIdSuffix (see
   `app/build.gradle.kts`), so a local `installDebug` coexists with an installed
   CI-built snapshot APK instead of clobbering it (or being blocked by its signature).
