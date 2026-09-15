@@ -39,7 +39,7 @@ android {
             if (selfIsSnapshot) "https://github.com/episode6/headache-tracker/commits/main/"
             else "https://github.com/episode6/headache-tracker/releases/latest",
         )
-        // snapshot builds keep the calendar foreground but swap the purple background
+        // snapshot builds keep the head foreground but swap the orange background
         // for dark charcoal, so the two installs are distinguishable at a glance;
         // placeholders resolve at manifest merge, so lint + resource shrinking still
         // see the concrete @mipmap reference per build

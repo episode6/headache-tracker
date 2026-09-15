@@ -4,40 +4,19 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- Scaled to keep the calendar inside the 33dp-radius circular safe zone
-         of the adaptive icon (corners land ~31dp from center at 0.8x) -->
+    <!-- Launcher art: the same head-with-circuits glyph the calendar's "Log today"
+         button and the reminder notifications use (ic_head_circuit.xml, 256-unit
+         viewport). Scaled to 0.23x and centred so the farthest point of the glyph
+         lands ~31dp from centre, inside the 33dp-radius circular safe zone of the
+         adaptive icon. -->
     <group
-        android:scaleX="0.8"
-        android:scaleY="0.8"
-        android:pivotX="54"
-        android:pivotY="56"
-        android:translateY="-2">
-
-    <!-- Calendar Body -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M28,32 L80,32 C82.2,32 84,33.8 84,36 L84,76 C84,78.2 82.2,80 80,80 L28,80 C25.8,80 24,78.2 24,76 L24,36 C24,33.8 25.8,32 28,32 Z" />
-
-    <!-- Calendar Header -->
-    <path
-        android:fillColor="#FF5252"
-        android:pathData="M28,32 L80,32 C82.2,32 84,33.8 84,36 L84,44 L24,44 L24,36 C24,33.8 25.8,32 28,32 Z" />
-
-    <!-- Intensity Dots -->
-    <!-- Row 1 -->
-    <path android:fillColor="#FFD740" android:pathData="M34,54 A3,3 0 1,1 40,54 A3,3 0 1,1 34,54" />
-    <path android:fillColor="#FF5252" android:pathData="M44,54 A3,3 0 1,1 50,54 A3,3 0 1,1 44,54" />
-    <path android:fillColor="#69F0AE" android:pathData="M54,54 A3,3 0 1,1 60,54 A3,3 0 1,1 54,54" />
-    <path android:fillColor="#FF5252" android:pathData="M64,54 A3,3 0 1,1 70,54 A3,3 0 1,1 64,54" />
-    <path android:fillColor="#FFD740" android:pathData="M74,54 A3,3 0 1,1 80,54 A3,3 0 1,1 74,54" />
-
-    <!-- Row 2 -->
-    <path android:fillColor="#69F0AE" android:pathData="M34,68 A3,3 0 1,1 40,68 A3,3 0 1,1 34,68" />
-    <path android:fillColor="#FFD740" android:pathData="M44,68 A3,3 0 1,1 50,68 A3,3 0 1,1 44,68" />
-    <path android:fillColor="#FF5252" android:pathData="M54,68 A3,3 0 1,1 60,68 A3,3 0 1,1 54,68" />
-    <path android:fillColor="#69F0AE" android:pathData="M64,68 A3,3 0 1,1 70,68 A3,3 0 1,1 64,68" />
-    <path android:fillColor="#FFD740" android:pathData="M74,68 A3,3 0 1,1 80,68 A3,3 0 1,1 74,68" />
-
+        android:scaleX="0.23"
+        android:scaleY="0.23"
+        android:translateX="25.45"
+        android:translateY="24.53">
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M192.5,171.47A88.34,88.34 0,0 0,224 101.93c-1,-45.71 -37.61,-83.4 -83.24,-85.8A88,88 0,0 0,48 102L25.55,145.18c-0.09,0.18 -0.18,0.36 -0.26,0.54a16,16 0,0 0,7.55 20.62l0.25,0.11L56,176.94V208a16,16 0,0 0,16 16h48a8,8 0,0 0,0 -16H72V171.81a8,8 0,0 0,-4.67 -7.28L40,152l23.07,-44.34A7.9,7.9 0,0 0,64 104a72,72 0,0 1,56 -70.21V49.38a24,24 0,1 0,16 0V32c1.3,0 2.6,0 3.9,0.1A72.26,72.26 0,0 1,203.84 80H184a8,8 0,0 0,-6.15 2.88L152.34,113.5a24.06,24.06 0,1 0,12.28 10.25L187.75,96h19.79q0.36,3.12 0.44,6.3a72.26,72.26 0,0 1,-28.78 59.3a8,8 0,0 0,-3.14 7.39l8,64a8,8 0,0 0,7.93 7a8.39,8.39 0,0 0,1 -0.06a8,8 0,0 0,6.95 -8.93ZM128,80a8,8 0,1 1,8 -8A8,8 0,0 1,128 80Zm16,64a8,8 0,1 1,8 -8A8,8 0,0 1,144 144Z" />
     </group>
 
 </vector>

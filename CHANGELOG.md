@@ -2,6 +2,15 @@
 
 ### v1.1.10 - Unreleased
 
+- New launcher icon: the glyph is now the head-with-circuits from the calendar's
+  "Log today" button (also used by the reminder notifications) instead of the old
+  calendar-with-dots, and the release background is now episode6 orange
+  (`#FF6600`) to match the other episode6 Android apps (meeting-minder,
+  podcast-hacker). Snapshot (dark charcoal) and debug (yellow) backgrounds are
+  unchanged. `project-icon.svg` was updated to match.
+- Internal: removed the unused legacy `mipmap-*dpi` launcher webps — with
+  minSdk 26 the adaptive icon in `mipmap-anydpi-v26` is always used, so the
+  bitmaps only ever held stale artwork.
 - Internal: added a `project-icon.svg` to the repo root — an SVG rendition of
   the app's launcher icon, shown by Collins as this project's sidebar icon.
 - Internal: fixed `project-icon.svg` not rendering in Collins — moved the
